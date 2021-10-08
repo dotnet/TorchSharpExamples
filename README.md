@@ -1,14 +1,22 @@
 # TorchSharp Examples
 
-This repo was created to hold examples and tutorials related to [TorchSharp](https://github.com/dotnet/TorchSharp), .NET-only bindings to libtorch, the engine behind PyTorch. If you are trying to familiarize yourself with TorchSharp, rather than contributing to it, this is the place to go.
+This repo holds examples and tutorials related to [TorchSharp](https://github.com/dotnet/TorchSharp), .NET-only bindings to libtorch, the engine behind PyTorch. If you are trying to familiarize yourself with TorchSharp, rather than contributing to it, this is the place to go.
 
 Currently, the examples are the same that are also found in the TorchSharp repo. Unlike the setup in that repo, where the examples are part of the overall VS solution file and use project references to pick up the TorchSharp dependencies, in this repo, the example solution is using the publically available TorchSharp packages form NuGet. It builds faster, and is more like the 
+
+### System / Environment Requirements
 
 In order to use TorchSharp, you will need both the most recent TorchSharp package, as well as one of the several libtorch-* packages that are available. The most basic one, which is used in this repository, is the libtorch-cpu package. As the name suggests, it uses a CPU backend to do training and inference.
 
 There is also support for CUDA (10.2 and 11.1) on both Windows and Linux, and each of these combinations has its own NuGet package. If you want to train on CUDA, you need to replace references to libtorch-cpu in the solution and projects.
 
-The examples solution should build without any modifications, either with Visual Studio, or using `dotnet build'. All of the examples build on an Nvidia GPU with 8GB of memory, while only a subset build on a GPU with 6GB.
+__Note__: Starting with NuGet release 0.93.4, we have simplified the package structure, so you only need to select one of these three packages, and it will include the others:
+
+    TorchSharp-cpu
+    TorchSharp-cuda-windows
+    TorchSharp-cuda-linux
+
+The examples solution should build without any modifications, either with Visual Studio, or using `dotnet build'. All of the examples build on an Nvidia GPU with 8GB of memory, while only a subset build on a GPU with 6GB. Running more than a few epochs while training on a CPU will take a very long time, especially on the CIFAR10 examples. MNIST is the most reasonable example to train on a CPU.
 
 ## Structure
 

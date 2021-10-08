@@ -12,14 +12,14 @@ namespace CSharpExamples
             var argumentsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "arguments.json");
             var argumentParser = new ArgumentParser(new FileInfo(argumentsPath), args);
 
-            var epochs = argumentParser.TryGetValue("epochs", out int e) ? e : 16;
-            var timeout = argumentParser.TryGetValue("outdir", out int t) ? t : 3600;
-
             if (argumentParser.Count == 0)
             {
                 argumentParser.UsingMessage("CSharpExamples", "<model-name>");
                 return;
             }
+
+            var epochs = argumentParser.TryGetValueInt("epochs", out int e) ? e : 16;
+            var timeout = argumentParser.TryGetValueInt("timeout", out int t) ? t : 3600;
 
             for (var idx = 0; idx < argumentParser.Count; idx++)
             {

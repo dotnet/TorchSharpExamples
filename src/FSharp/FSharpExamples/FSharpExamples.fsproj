@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <WarnOn>3390;$(WarnOn)</WarnOn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="MNIST.fs" />
+    <Compile Include="AdversarialExampleGeneration.fs" />
+    <Compile Include="AlexNet.fs" />
+    <Compile Include="SequenceToSequence.fs" />
+    <Compile Include="TextClassification.fs" />
+    <Content Include="..\..\CSharp\CSharpExamples\arguments.json" Link="arguments.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utils\Examples.Utils.csproj" />
+  </ItemGroup>
+
+</Project>
