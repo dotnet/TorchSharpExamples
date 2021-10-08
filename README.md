@@ -34,6 +34,10 @@ SequenceToSequence uses the [WikiText2](https://s3.amazonaws.com/research.metami
 
 TextClassification uses the [AG_NEWS](https://github.com/mhjabreel/CharCnn_Keras/tree/master/data/ag_news_csv) dataset, a CSV file.
 
+# Tutorials
+
+If you want to take a more methodical look at how to use TorchSharp, there is a set of tutorials under development here: [tutorials/index.md](tutorials/index.md). It's quite embryotic at the moment, but we will add additional content in rapid order.
+
 # Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
@@ -45,3 +49,31 @@ There are two main things we would like help with:
 2. Picking up an issue from the 'Issues' list. For example, the examples are currently set up to run on Windows, picking up data from under the 'Downloads' folder. If you have thoughts on the best way to do this on MacOS or Linux, please help with that.
 
 If you add a new example, please adjust it to work on a mainstream CUDA processor. This means making sure that it builds on an 8GB processor, with sufficient invocations of the garbage collector.
+
+## A Useful Tip for Contributors
+
+A useful tip from the Tensorflow.NET repo:
+
+After you fork, add dotnet/TorchSharp as 'upstream' to your local repo ...
+
+```git
+git remote add upstream https://github.com/dotnet/TorchSharpExamples.git
+```
+
+This makes it easy to keep your fork up to date by regularly pulling and merging from upstream.
+
+Assuming that you do all your development off your main branch, keep your main updated
+with these commands:
+
+```git
+git checkout main
+git pull upstream main
+git push origin main
+```
+
+Then, you merge onto your dev branch:
+
+```git
+git checkout <<your dev branch>>
+git merge main
+```
