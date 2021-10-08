@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CSharpExamples": {
+      "commandName": "Project",
+      "commandLineArgs": "-e 1 fashion-mnist fashion-fgsm"
+    }
+  }
+}
