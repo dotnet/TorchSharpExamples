@@ -33,14 +33,11 @@ namespace CSharpExamples
         private readonly static string _dataset = "CIFAR10";
         private readonly static string _dataLocation = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "..", "Downloads", _dataset);
 
-        private static int _epochs = 8;
         private static int _trainBatchSize = 64;
         private static int _testBatchSize = 128;
 
         private readonly static int _logInterval = 25;
         private readonly static int _numClasses = 10;
-
-        private readonly static int _timeout = 3600;    // One hour by default.
 
         internal static void Run(int epochs, int timeout, string modelName)
         {
@@ -55,7 +52,6 @@ namespace CSharpExamples
             if (device.type == DeviceType.CUDA) {
                 _trainBatchSize *= 8;
                 _testBatchSize *= 8;
-                _epochs *= 16;
             }
 
             Console.WriteLine();

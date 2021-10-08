@@ -179,27 +179,27 @@ namespace TorchSharp.Examples.Utils
                         }
                 }
             }
-            catch(ArgumentOutOfRangeException are)
+            catch(ArgumentOutOfRangeException)
             {
             }
         }
 
-        public bool TryGetValue(string name, out bool value)
+        public bool TryGetValueBool(string name, out bool value)
         {
             return TryGetValue<bool>(name, out value);
         }
 
-        public bool TryGetValue(string name, out int value)
+        public bool TryGetValueInt(string name, out int value)
         {
             return TryGetValue<int>(name, out value);
         }
 
-        public bool TryGetValue(string name, out string value)
+        public bool TryGetValueString(string name, out string value)
         {
             return TryGetValue<string>(name, out value);
         }
 
-        public bool TryGetValue(string name, out string[] value)
+        public bool TryGetValueStrings(string name, out string[] value)
         {
             return TryGetValue<string[]>(name, out value);
         }
