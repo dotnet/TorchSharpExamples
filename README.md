@@ -20,7 +20,7 @@ The examples solution should build without any modifications, either with Visual
 
 ## Structure
 
-There are variants of all models in both C# and F#. For each of the two languages, there is a 'Models' library, and a 'XXXExamples' console app, which is what is used for batch training of the model. There is also a utility library that is written in C# only, and used from both C# and F#.
+There are variants of all models in both C# and F#. For C#, there is a 'Models' library, and a 'XXXExamples' console app, which is what is used for batch training of the model. For F#, the models are bundled with the training code (we may restructure this in the future). There is also a utility library that is written in C# only, and used from both C# and F#.
 
 The console apps are, as mentioned, meant to be used for batch training. The command line must specify the model to be used. In the case of MNIST, there are two data sets -- the original 'MNIST' as well as the harder 'Fashion MNIST'.
 
@@ -41,6 +41,10 @@ The AlexNet, ResNet*, MobileNet, and VGG* models use the [CIFAR10](https://www.c
 SequenceToSequence uses the [WikiText2](https://s3.amazonaws.com/research.metamind.io/wikitext/wikitext-2-v1.zip) dataset. It's kept in a regular .zip file.
 
 TextClassification uses the [AG_NEWS](https://github.com/mhjabreel/CharCnn_Keras/tree/master/data/ag_news_csv) dataset, a CSV file.
+
+# Tutorials
+
+We have started work on tutorials, but they are not ready yet. They will mostly be based on .NET Interactive notebooks. If you haven't tried that environment yet, it's worth playing around with it inside VS Code.
 
 # Contributing
 
