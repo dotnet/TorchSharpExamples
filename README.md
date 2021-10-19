@@ -20,7 +20,7 @@ The examples solution should build without any modifications, either with Visual
 
 ## Structure
 
-There are variants of all models in both C# and F#. For each of the two languages, there is a 'Models' library, and a 'XXXExamples' console app, which is what is used for batch training of the model. There is also a utility library that is written in C# only, and used from both C# and F#.
+There are variants of all models in both C# and F#. For C#, there is a 'Models' library, and a 'XXXExamples' console app, which is what is used for batch training of the model. For F#, the models are bundled with the training code (we may restructure this in the future). There is also a utility library that is written in C# only, and used from both C# and F#.
 
 The console apps are, as mentioned, meant to be used for batch training. The command line must specify the model to be used. In the case of MNIST, there are two data sets -- the original 'MNIST' as well as the harder 'Fashion MNIST'.
 
@@ -42,6 +42,10 @@ SequenceToSequence uses the [WikiText2](https://s3.amazonaws.com/research.metami
 
 TextClassification uses the [AG_NEWS](https://github.com/mhjabreel/CharCnn_Keras/tree/master/data/ag_news_csv) dataset, a CSV file.
 
+# Tutorials
+
+We have started work on tutorials, but they are not ready yet. They will mostly be based on .NET Interactive notebooks. If you haven't tried that environment yet, it's worth playing around with it inside VS Code.
+
 # Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
@@ -53,3 +57,31 @@ There are two main things we would like help with:
 2. Picking up an issue from the 'Issues' list. For example, the examples are currently set up to run on Windows, picking up data from under the 'Downloads' folder. If you have thoughts on the best way to do this on MacOS or Linux, please help with that.
 
 If you add a new example, please adjust it to work on a mainstream CUDA processor. This means making sure that it builds on an 8GB processor, with sufficient invocations of the garbage collector.
+
+## A Useful Tip for Contributors
+
+A useful tip from the Tensorflow.NET repo:
+
+After you fork, add dotnet/TorchSharp as 'upstream' to your local repo ...
+
+```git
+git remote add upstream https://github.com/dotnet/TorchSharpExamples.git
+```
+
+This makes it easy to keep your fork up to date by regularly pulling and merging from upstream.
+
+Assuming that you do all your development off your main branch, keep your main updated
+with these commands:
+
+```git
+git checkout main
+git pull upstream main
+git push origin main
+```
+
+Then, you merge onto your dev branch:
+
+```git
+git checkout <<your dev branch>>
+git merge main
+```
