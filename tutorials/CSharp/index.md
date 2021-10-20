@@ -6,9 +6,9 @@
 
 [Tutorial 2](tutorial2.md): Tensors
 
-Tutorial 3: Basic Numerics
+[Tutorial 3](tutorial3.md): Basic Numerics
 
-Tutorial 4: Random Numbers and Distributions
+[Tutorial 4](tutorial4.md): Random Numbers and Distributions
 
 Tutorial 5: Data Preparation
 
