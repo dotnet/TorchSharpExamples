@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="TorchSharp-cpu" Version="0.93.6" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Utils\Examples.Utils.csproj" />
   </ItemGroup>
 
