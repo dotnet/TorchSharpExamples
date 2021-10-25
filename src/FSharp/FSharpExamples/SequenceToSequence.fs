@@ -90,9 +90,9 @@ type TransformerModel(ntokens, device:torch.Device) as this =
     do
         let initrange = 0.1
 
-        init.uniform(encoder.Weight, -initrange, initrange) |> ignore
-        init.zeros(decoder.Bias) |> ignore
-        init.uniform(decoder.Weight, -initrange, initrange) |> ignore
+        init.uniform_(encoder.Weight, -initrange, initrange) |> ignore
+        init.zeros_(decoder.Bias) |> ignore
+        init.uniform_(decoder.Weight, -initrange, initrange) |> ignore
 
         this.RegisterComponents()
 
@@ -168,7 +168,7 @@ let train epoch (model:TransformerModel) (optimizer:Optimizer) (trainData:torch.
             torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5) |> ignore
             optimizer.step() |> ignore
 
-            total_loss <- total_loss + loss.cpu().DataItem<float32>()
+            total_loss <- total_loss + loss.cpu().item<float32>()
         end 
 
         GC.Collect()
@@ -208,7 +208,7 @@ let evaluate (model:TransformerModel) (evalData:torch.Tensor) ntokens =
 
             use output = model.forward(data, src_mask)
             use loss = criterion (output.view(-1L, ntokens)) targets
-            total_loss <- total_loss + (float32 data.shape.[0]) * loss.cpu().DataItem<float32>()
+            total_loss <- total_loss + (float32 data.shape.[0]) * loss.cpu().item<float32>()
         end 
 
         GC.Collect()
@@ -265,7 +265,7 @@ let run epochs =
 
         printfn $"\nEnd of epoch: {epoch} | lr: {lrStr} | time: {elapsed}s | loss: {lossStr}\n"
 
-        scheduler.step()
+        scheduler.step() |> ignore
 
     let tst_loss = evaluate model test_data ntokens
 
