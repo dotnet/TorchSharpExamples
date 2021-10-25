@@ -12,12 +12,8 @@
 
 Tutorial 5: Data Preparation
 
-Tutorial 6: Models
+[Tutorial 6](tutorial6.md): Models
 
-Toturial 7: Sequential
+[Tutorial 7](tutorial7.md): Learning Rate Schedulers
 
-Tutorial 8: Training with Loss Functions and Optimizers
-
-Tutorial 9: Learning Rate Schedulers
-
-Tutorial 10: TorchVision
+Tutorial 8: TorchVision
