@@ -8,9 +8,8 @@ The tutorials are organized to start with the very basics, creating and using te
 
 Once we have looked at numerics, it is time to move on to constructing models from numerics, and then to train them using optimizers and learning rate schedulers.
 
-Most tutorials are presented in the form of an interactive notebook, which is intended to be executed under .NET Interactive. These notebooks have been developed and tested using Visual Studio code with the .NET Interactive extension installed.
+Most tutorials are presented in the form of an interactive notebook, which is intended to be executed under .NET Interactive. These notebooks have been developed and tested using Visual Studio Code with the .NET Interactive extension installed.
 
 For your tutorials, please choose one of: [C#](./CSharp/index.md) or [F#](./FSharp/index.md).
 
-
-Each tutorial is associated with a C#-based source code file.
+__More tutorials are coming.__
