@@ -10,6 +10,10 @@ Once we have looked at numerics, it is time to move on to constructing models fr
 
 Most tutorials are presented in the form of an interactive notebook, which is intended to be executed under .NET Interactive. These notebooks have been developed and tested using Visual Studio Code with the .NET Interactive extension installed.
 
+For more information on installing the .NET Interactive extension, see:
+
+[Installing .NET Interactive Notebooks](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode)
+
 For your tutorials, please choose one of: [C#](./CSharp/index.md) or [F#](./FSharp/index.md).
 
 __More tutorials are coming.__
