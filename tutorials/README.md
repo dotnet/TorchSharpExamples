@@ -14,6 +14,11 @@ For more information on installing the .NET Interactive extension, see:
 
 [Installing .NET Interactive Notebooks](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-interactive-vscode)
 
+or 
+
+[Installing .NET Interactive](https://github.com/dotnet/interactive/blob/main/docs/install-dotnet-interactive.md)
+
+
 For your tutorials, please choose one of: [C#](./CSharp/index.md) or [F#](./FSharp/index.md).
 
 __More tutorials are coming.__
