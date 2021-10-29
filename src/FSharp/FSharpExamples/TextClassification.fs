@@ -55,9 +55,9 @@ type TextClassificationModel(vocabSize, embedDim, nClasses, device:torch.Device)
     do
         let initrange = 0.5
 
-        init.uniform(embedding.Weight, -initrange, initrange) |> ignore
-        init.uniform(fc.Weight, -initrange, initrange) |> ignore
-        init.zeros(fc.Bias) |> ignore
+        init.uniform_(embedding.Weight, -initrange, initrange) |> ignore
+        init.uniform_(fc.Weight, -initrange, initrange) |> ignore
+        init.zeros_(fc.Bias) |> ignore
 
         this.RegisterComponents()
 
@@ -90,7 +90,7 @@ let train epoch (trainData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) 
         torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5) |> ignore
         optimizer.step() |> ignore
 
-        total_acc <- total_acc + float ((predicted_labels.argmax(1L).eq(labels)).sum().cpu().DataItem<int64>())
+        total_acc <- total_acc + float ((predicted_labels.argmax(1L).eq(labels)).sum().cpu().item<int64>())
         total_count <- total_count + labels.size(0)
 
         if (batch % logInterval = 0) && (batch > 0) then
@@ -113,7 +113,7 @@ let evaluate (testData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) (mod
         let predicted_labels = model.forward(texts, offsets)
         let loss = criterion predicted_labels labels
 
-        total_acc <- total_acc + float ((predicted_labels.argmax(1L).eq(labels)).sum().cpu().DataItem<int64>())
+        total_acc <- total_acc + float ((predicted_labels.argmax(1L).eq(labels)).sum().cpu().item<int64>())
         total_count <- total_count + labels.size(0)
 
     total_acc / (float total_count)
@@ -152,7 +152,7 @@ let run epochs =
         let lrStr = scheduler.LearningRate.ToString("0.0000")
         let tsStr = sw.Elapsed.TotalSeconds.ToString("0.0")
         printfn $"\nEnd of epoch: {epoch} | lr: {lrStr} | time: {tsStr}s\n"
-        scheduler.step()
+        scheduler.step() |> ignore
 
     use test_reader = TorchText.Data.AG_NEWSReader.AG_NEWS("test", device, datasetPath)
 

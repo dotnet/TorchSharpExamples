@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+# TorchSharp serialized model files from tutorials
+*.model.bin
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -348,3 +351,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
