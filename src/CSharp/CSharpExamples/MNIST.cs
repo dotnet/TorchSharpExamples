@@ -100,7 +100,7 @@ namespace CSharpExamples
         {
             var optimizer = optim.Adam(model.parameters());
 
-            var scheduler = optim.lr_scheduler.StepLR(optimizer, 1, 0.7, last_epoch: 5);
+            var scheduler = optim.lr_scheduler.StepLR(optimizer, 1, 0.7);
 
             Stopwatch totalTime = new Stopwatch();
             totalTime.Start();
