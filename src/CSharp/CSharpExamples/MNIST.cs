@@ -57,23 +57,7 @@ namespace CSharpExamples
             Console.WriteLine($"\tRunning MNIST with {dataset} on {device.type.ToString()} for {epochs} epochs, terminating after {TimeSpan.FromSeconds(timeout)}.");
             Console.WriteLine();
 
-            var datasetPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "..", "Downloads", dataset);
-
             random.manual_seed(1);
-
-            var cwd = Environment.CurrentDirectory;
-
-
-            var sourceDir = datasetPath;
-            var targetDir = Path.Combine(datasetPath, "test_data");
-
-            if (!Directory.Exists(targetDir)) {
-                Directory.CreateDirectory(targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-images-idx3-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-labels-idx1-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-images-idx3-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-labels-idx1-ubyte.gz"), targetDir);
-            }
 
             if (device.type == DeviceType.CUDA) {
                 _trainBatchSize *= 4;
@@ -89,8 +73,8 @@ namespace CSharpExamples
             Console.WriteLine($"\tPreparing training and test data...");
             Console.WriteLine();
 
-            using (MNISTReader train = new MNISTReader(targetDir, "train", _trainBatchSize, device: device, shuffle: true, transform: normImage),
-                                test = new MNISTReader(targetDir, "t10k", _testBatchSize, device: device, transform: normImage)) {
+            using (MNISTReader train = new MNISTReader(download: true, is_train: true, batch_size: _trainBatchSize, device: device, shuffle: true, transform: normImage),
+                                test = new MNISTReader(download: true, is_train: false, batch_size: _testBatchSize, device: device, transform: normImage)) {
 
                 TrainingLoop(dataset, timeout, device, model, train, test);
             }

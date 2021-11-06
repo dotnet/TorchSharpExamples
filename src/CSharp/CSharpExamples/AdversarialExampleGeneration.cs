@@ -80,23 +80,12 @@ namespace CSharpExamples
             }
 
             Console.WriteLine($"\tPreparing training and test data...");
-
-            var sourceDir = _dataLocation;
-            var targetDir = Path.Combine(_dataLocation, "test_data");
-
-            if (!Directory.Exists(targetDir)) {
-                Directory.CreateDirectory(targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-images-idx3-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-labels-idx1-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-images-idx3-ubyte.gz"), targetDir);
-                Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-labels-idx1-ubyte.gz"), targetDir);
-            }
-
+            
             TorchSharp.Examples.MNIST.Model model = null;
 
             var normImage = transforms.Normalize(new double[] { 0.1307 }, new double[] { 0.3081 }, device: (Device)device);
 
-            using (var test = new MNISTReader(targetDir, "t10k", _testBatchSize, device: device, transform: normImage)) {
+            using (var test = new MNISTReader(is_train: false, download: true, batch_size: _testBatchSize, device: device, transform: normImage)) {
 
                 var modelFile = dataset + ".model.bin";
 
@@ -106,7 +95,7 @@ namespace CSharpExamples
 
                     model = new TorchSharp.Examples.MNIST.Model("model", device);
 
-                    using (var train = new MNISTReader(targetDir, "train", _trainBatchSize, device: device, shuffle: true, transform: normImage)) {
+                    using (var train = new MNISTReader(is_train: true, download: true, batch_size: _trainBatchSize, device: device, shuffle: true, transform: normImage)) {
                         MNIST.TrainingLoop(dataset, timeout, (Device)device, model, train, test);
                     }
 

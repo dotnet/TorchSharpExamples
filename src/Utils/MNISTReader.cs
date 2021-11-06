@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using TorchSharp.torchvision;
+using TorchSharp.Examples.Utils;
 using static TorchSharp.torch;
 
 namespace TorchSharp.Examples
@@ -17,8 +19,65 @@ namespace TorchSharp.Examples
     /// </summary>
     public sealed class MNISTReader : IEnumerable<(Tensor, Tensor)>, IDisposable
     {
+        
         /// <summary>
         /// Constructor
+        /// </summary>
+        /// <param name="is_train">Set as train dataset</param>
+        /// <param name="batch_size">The batch size</param>
+        /// <param name="shuffle">Randomly shuffle the images.</param>
+        /// <param name="device">The device, i.e. CPU or GPU to place the output tensors on.</param>
+        /// <param name="transform"></param>
+        /// <param name="download">Download dataset automatically</param>
+        /// <param name="prefix">If you're download dataset with this method, this will be ignored</param>
+        public MNISTReader(string path = null, string prefix = null, int batch_size = 32, bool shuffle = false, Device device = null,
+            ITransform transform = null, bool is_train = true, bool download = false)
+        {
+            BatchSize = batch_size;
+            path ??= "data/mnist";
+
+            if (download)
+            {
+                using var wc = new WebClient();
+                if (is_train)
+                {
+                    path = Path.Combine(path, "train");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                        wc.DownloadFile("http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz",
+                            Path.Combine(path, "train-images-idx3-ubyte.gz"));
+                        wc.DownloadFile("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz",
+                            Path.Combine(path, "train-labels-idx1-ubyte.gz"));
+                        Decompress.DecompressGZipFile(Path.Combine(path, "train-images-idx3-ubyte.gz"), path);
+                        Decompress.DecompressGZipFile(Path.Combine(path, "train-labels-idx1-ubyte.gz"), path);
+                        Console.WriteLine("Download finished");
+                    }
+                    else Console.WriteLine("Ignore download");
+                    Setup(path, "train", batch_size, shuffle, device, transform);
+                }
+                else
+                {
+                    path = Path.Combine(path, "test");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                        wc.DownloadFile("http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz",
+                            Path.Combine(path, "t10k-images-idx3-ubyte.gz"));
+                        wc.DownloadFile("http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz",
+                            Path.Combine(path, "t10k-labels-idx1-ubyte.gz"));
+                        Decompress.DecompressGZipFile(Path.Combine(path, "t10k-images-idx3-ubyte.gz"), path);
+                        Decompress.DecompressGZipFile(Path.Combine(path, "t10k-labels-idx1-ubyte.gz"), path);
+                        Console.WriteLine("Download finished");
+                    }
+                    else Console.WriteLine("Ignore download");
+                    Setup(path, "t10k", batch_size, shuffle, device, transform);
+                }
+            }
+            else Setup(path, prefix, batch_size, shuffle, device, transform);
+        }
+        /// <summary>
+        /// Initializer
         /// </summary>
         /// <param name="path">Path to the folder containing the image files.</param>
         /// <param name="prefix">The file name prefix, either 'train' or 't10k' (the latter being the test data set).</param>
@@ -26,7 +85,7 @@ namespace TorchSharp.Examples
         /// <param name="shuffle">Randomly shuffle the images.</param>
         /// <param name="device">The device, i.e. CPU or GPU to place the output tensors on.</param>
         /// <param name="transform"></param>
-        public MNISTReader(string path, string prefix, int batch_size = 32, bool shuffle = false, torch.Device device = null, ITransform transform = null)
+        private void Setup(string path, string prefix, int batch_size = 32, bool shuffle = false, torch.Device device = null, ITransform transform = null)
         {
             // The MNIST data set is small enough to fit in memory, so let's load it there.
 
