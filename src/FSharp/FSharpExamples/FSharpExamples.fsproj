@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cuda-windows" Version="0.95.0" />
+    <PackageReference Include="TorchSharp-cuda-windows" Version="0.95.1" />
   </ItemGroup>
 
   <ItemGroup>
