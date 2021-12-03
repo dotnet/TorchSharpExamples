@@ -63,7 +63,8 @@ namespace CSharpExamples
             var tokenizer = TorchText.Data.Utils.get_tokenizer("basic_english");
 
             var counter = new TorchText.Vocab.Counter<string>();
-            foreach (var item in vocab_iter) {
+            foreach (var item in vocab_iter)
+            {
                 counter.update(tokenizer(item));
             }
 
@@ -91,7 +92,8 @@ namespace CSharpExamples
             var totalTime = new Stopwatch();
             totalTime.Start();
 
-            foreach (var epoch in Enumerable.Range(1, epochs)) {
+            foreach (var epoch in Enumerable.Range(1, epochs))
+            {
 
                 var sw = new Stopwatch();
                 sw.Start();
@@ -101,7 +103,7 @@ namespace CSharpExamples
                 var val_loss = evaluate(valid_data, model, loss, bptt, ntokens, optimizer);
                 sw.Stop();
 
-                Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {scheduler.LearningRate:0.00} | time: {sw.Elapsed.TotalSeconds:0.0}s | loss: {val_loss:0.00}\n");
+                Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {optimizer.LearningRate:0.00} | time: {sw.Elapsed.TotalSeconds:0.0}s | loss: {val_loss:0.00}\n");
                 scheduler.step();
 
                 if (totalTime.Elapsed.TotalSeconds > timeout) break;
@@ -119,81 +121,94 @@ namespace CSharpExamples
 
             var total_loss = 0.0f;
 
-            var src_mask = model.GenerateSquareSubsequentMask(bptt);
+            using (var d = torch.NewDisposeScope())
+            {
+                var batch = 0;
+                var log_interval = 200;
 
-            var batch = 0;
-            var log_interval = 200;
+                var src_mask = model.GenerateSquareSubsequentMask(bptt);
 
-            var tdlen = train_data.shape[0];
+                var tdlen = train_data.shape[0];
 
-            for (int i = 0; i < tdlen - 1; batch++, i += bptt) {
 
-                var (data, targets) = GetBatch(train_data, i, bptt);
-                optimizer.zero_grad();
+                for (int i = 0; i < tdlen - 1; batch++, i += bptt)
+                {
 
-                if (data.shape[0] != bptt) {
-                    src_mask.Dispose();
-                    src_mask = model.GenerateSquareSubsequentMask(data.shape[0]);
-                }
+                    var (data, targets) = GetBatch(train_data, i, bptt);
+                    optimizer.zero_grad();
 
-                using (var output = model.forward(data, src_mask)) {
-                    var loss = criterion(output.view(-1, ntokens), targets);
-                    loss.backward();
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5);
-                    optimizer.step();
+                    if (data.shape[0] != bptt)
+                    {
+                        src_mask = model.GenerateSquareSubsequentMask(data.shape[0]);
+                    }
 
-                    total_loss += loss.to(torch.CPU).item<float>();
-                }
+                    using (var output = model.forward(data, src_mask))
+                    {
+                        var loss = criterion(output.view(-1, ntokens), targets);
+                        loss.backward();
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5);
+                        optimizer.step();
 
-                GC.Collect();
+                        total_loss += loss.to(torch.CPU).item<float>();
+                    }
 
-                if (batch % log_interval == 0 && batch > 0) {
-                    var cur_loss = total_loss / log_interval;
-                    Console.WriteLine($"epoch: {epoch} | batch: {batch} / {tdlen / bptt} | loss: {cur_loss:0.00}");
-                    total_loss = 0;
+                    if (batch % log_interval == 0 && batch > 0)
+                    {
+                        var cur_loss = total_loss / log_interval;
+                        Console.WriteLine($"epoch: {epoch} | batch: {batch} / {tdlen / bptt} | loss: {cur_loss:0.00}");
+                        total_loss = 0;
+                    }
+
+                    d.DisposeEverythingBut(src_mask);
                 }
             }
-
-            src_mask.Dispose();
         }
 
         private static double evaluate(Tensor eval_data, TransformerModel model, Loss criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
         {
             model.Eval();
 
-            var total_loss = 0.0f;
-            var src_mask = model.GenerateSquareSubsequentMask(bptt);
-            var batch = 0;
+            using (var d = torch.NewDisposeScope())
+            {
 
-            for (int i = 0; i < eval_data.shape[0] - 1; batch++, i += bptt) {
+                var src_mask = model.GenerateSquareSubsequentMask(bptt);
 
-                var (data, targets) = GetBatch(eval_data, i, bptt);
-                if (data.shape[0] != bptt) {
-                    src_mask.Dispose();
-                    src_mask = model.GenerateSquareSubsequentMask(data.shape[0]);
+                var total_loss = 0.0f;
+                var batch = 0;
+
+
+                for (int i = 0; i < eval_data.shape[0] - 1; batch++, i += bptt)
+                {
+
+                    var (data, targets) = GetBatch(eval_data, i, bptt);
+                    if (data.shape[0] != bptt)
+                    {
+                        src_mask = model.GenerateSquareSubsequentMask(data.shape[0]);
+                    }
+                    using (var output = model.forward(data, src_mask))
+                    {
+                        var loss = criterion(output.view(-1, ntokens), targets);
+                        total_loss += data.shape[0] * loss.to(torch.CPU).item<float>();
+                    }
+
+                    data.Dispose();
+                    targets.Dispose();
+
+                    d.DisposeEverythingBut(src_mask);
                 }
-                using (var output = model.forward(data, src_mask)) {
-                    var loss = criterion(output.view(-1, ntokens), targets);
-                    total_loss += data.shape[0] * loss.to(torch.CPU).item<float>();
-                }
 
-                data.Dispose();
-                targets.Dispose();
-
-                GC.Collect();
+                return total_loss / eval_data.shape[0];
             }
-
-            src_mask.Dispose();
-
-            return total_loss / eval_data.shape[0];
         }
 
         static Tensor ProcessInput(IEnumerable<string> iter, Func<string, IEnumerable<string>> tokenizer, TorchText.Vocab.Vocab vocab)
         {
             List<Tensor> data = new List<Tensor>();
-            foreach (var item in iter) {
+            foreach (var item in iter)
+            {
                 List<long> itemData = new List<long>();
-                foreach (var token in tokenizer(item)) {
+                foreach (var token in tokenizer(item))
+                {
                     itemData.Add(vocab[token]);
                 }
                 data.Add(torch.tensor(itemData.ToArray(), torch.int64));

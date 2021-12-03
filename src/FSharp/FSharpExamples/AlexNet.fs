@@ -99,6 +99,9 @@ let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
     printfn $"Epoch: {epoch}..."
 
     for (input,labels) in dataLoader.Data() do
+
+        use d = torch.NewDisposeScope()
+        
         optimizer.zero_grad()
 
         begin
@@ -122,8 +125,6 @@ let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
             batchID <- batchID + 1
         end
 
-        GC.Collect()
-
 let test (model:Model) (dataLoader:CIFARReader) =
     model.Eval()
 
@@ -134,6 +135,8 @@ let test (model:Model) (dataLoader:CIFARReader) =
     let mutable batchCount = 0L
 
     for (input,labels) in dataLoader.Data() do
+
+        use d = torch.NewDisposeScope()
 
         use estimate = input --> model
         use output = loss estimate labels
@@ -160,7 +163,6 @@ let trainingLoop (model:Model) epochs trainData testData =
         for epoch = 1 to epochs do
             train model optimizer trainData epoch
             test model testData
-            GC.Collect()
 
         sw.Stop()
     

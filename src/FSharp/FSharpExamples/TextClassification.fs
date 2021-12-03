@@ -55,9 +55,9 @@ type TextClassificationModel(vocabSize, embedDim, nClasses, device:torch.Device)
     do
         let initrange = 0.5
 
-        init.uniform_(embedding.Weight, -initrange, initrange) |> ignore
-        init.uniform_(fc.Weight, -initrange, initrange) |> ignore
-        init.zeros_(fc.Bias) |> ignore
+        init.uniform_(embedding.weight, -initrange, initrange) |> ignore
+        init.uniform_(fc.weight, -initrange, initrange) |> ignore
+        init.zeros_(fc.bias) |> ignore
 
         this.RegisterComponents()
 
@@ -80,6 +80,8 @@ let train epoch (trainData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) 
     let batch_count = trainData.Count()
 
     for labels,texts,offsets in trainData do
+        
+        use d = torch.NewDisposeScope()
 
         optimizer.zero_grad()
 
@@ -98,8 +100,6 @@ let train epoch (trainData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) 
             printfn $"epoch: {epoch} | batch: {batch} / {batch_count} | accuracy: {accuracy}"
 
         batch <- batch + 1
-
-    GC.Collect()
 
 let evaluate (testData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) (model:TextClassificationModel) =
 
@@ -149,7 +149,7 @@ let run epochs =
 
         sw.Stop()
 
-        let lrStr = scheduler.LearningRate.ToString("0.0000")
+        let lrStr = optimizer.LearningRate.ToString("0.0000")
         let tsStr = sw.Elapsed.TotalSeconds.ToString("0.0")
         printfn $"\nEnd of epoch: {epoch} | lr: {lrStr} | time: {tsStr}s\n"
         scheduler.step() |> ignore

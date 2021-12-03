@@ -66,6 +66,8 @@ let test (model:MNIST.Model) (eps:float) (dataLoader:MNISTReader) size =
 
     for (input,labels) in dataLoader do
 
+        use d = torch.NewDisposeScope()
+
         input.requires_grad <- true
         
         begin  // This is introduced in order to let a few tensors go out of scope before GC
@@ -79,8 +81,6 @@ let test (model:MNIST.Model) (eps:float) (dataLoader:MNISTReader) size =
             use final = perturbed --> model
             correct <- correct + final.argmax(1L).eq(labels).sum().ToInt32()
         end
-
-        GC.Collect()
 
     float correct / size
 

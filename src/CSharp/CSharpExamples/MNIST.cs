@@ -47,7 +47,8 @@ namespace CSharpExamples
         {
             _epochs = epochs;
 
-            if (string.IsNullOrEmpty(dataset)) {
+            if (string.IsNullOrEmpty(dataset))
+            {
                 dataset = "mnist";
             }
 
@@ -67,7 +68,8 @@ namespace CSharpExamples
             var sourceDir = datasetPath;
             var targetDir = Path.Combine(datasetPath, "test_data");
 
-            if (!Directory.Exists(targetDir)) {
+            if (!Directory.Exists(targetDir))
+            {
                 Directory.CreateDirectory(targetDir);
                 Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-images-idx3-ubyte.gz"), targetDir);
                 Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-labels-idx1-ubyte.gz"), targetDir);
@@ -75,7 +77,8 @@ namespace CSharpExamples
                 Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-labels-idx1-ubyte.gz"), targetDir);
             }
 
-            if (device.type == DeviceType.CUDA) {
+            if (device.type == DeviceType.CUDA)
+            {
                 _trainBatchSize *= 4;
                 _testBatchSize *= 4;
             }
@@ -90,7 +93,8 @@ namespace CSharpExamples
             Console.WriteLine();
 
             using (MNISTReader train = new MNISTReader(targetDir, "train", _trainBatchSize, device: device, shuffle: true, transform: normImage),
-                                test = new MNISTReader(targetDir, "t10k", _testBatchSize, device: device, transform: normImage)) {
+                                test = new MNISTReader(targetDir, "t10k", _testBatchSize, device: device, transform: normImage))
+            {
 
                 TrainingLoop(dataset, timeout, device, model, train, test);
             }
@@ -105,7 +109,8 @@ namespace CSharpExamples
             Stopwatch totalTime = new Stopwatch();
             totalTime.Start();
 
-            for (var epoch = 1; epoch <= _epochs; epoch++) {
+            for (var epoch = 1; epoch <= _epochs; epoch++)
+            {
 
                 Train(model, optimizer, nll_loss(reduction: Reduction.Mean), device, train, epoch, train.BatchSize, train.Size);
                 Test(model, nll_loss(reduction: nn.Reduction.Sum), device, test, test.Size);
@@ -137,23 +142,28 @@ namespace CSharpExamples
             int batchId = 1;
 
             Console.WriteLine($"Epoch: {epoch}...");
-            foreach (var (data, target) in dataLoader) {
-                optimizer.zero_grad();
 
-                var prediction = model.forward(data);
-                var output = loss(prediction, target);
+            foreach (var (data, target) in dataLoader)
+            {
+                using (var d = torch.NewDisposeScope())
+                {
+                    optimizer.zero_grad();
 
-                output.backward();
+                    var prediction = model.forward(data);
+                    var output = loss(prediction, target);
 
-                optimizer.step();
+                    output.backward();
 
-                if (batchId % _logInterval == 0) {
-                    Console.WriteLine($"\rTrain: epoch {epoch} [{batchId * batchSize} / {size}] Loss: {output.ToSingle():F4}");
+                    optimizer.step();
+
+                    if (batchId % _logInterval == 0)
+                    {
+                        Console.WriteLine($"\rTrain: epoch {epoch} [{batchId * batchSize} / {size}] Loss: {output.ToSingle():F4}");
+                    }
+
+                    batchId++;
+
                 }
-
-                batchId++;
-
-                GC.Collect();
             }
         }
 
@@ -169,17 +179,16 @@ namespace CSharpExamples
             double testLoss = 0;
             int correct = 0;
 
-            foreach (var (data, target) in dataLoader) {
-                var prediction = model.forward(data);
-                var output = loss(prediction, target);
-                testLoss += output.ToSingle();
+            foreach (var (data, target) in dataLoader)
+            {
+                using (var d = torch.NewDisposeScope())
+                {
+                    var prediction = model.forward(data);
+                    var output = loss(prediction, target);
+                    testLoss += output.ToSingle();
 
-                var pred = prediction.argmax(1);
-                correct += pred.eq(target).sum().ToInt32();
-
-                pred.Dispose();
-
-                GC.Collect();
+                    correct += prediction.argmax(1).eq(target).sum().ToInt32();
+                }
             }
 
             Console.WriteLine($"Size: {size}, Total: {size}");

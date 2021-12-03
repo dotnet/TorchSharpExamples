@@ -35,9 +35,9 @@ namespace TorchSharp.Examples
         {
             var initrange = 0.5;
 
-            init.uniform_(embedding.Weight, -initrange, initrange);
-            init.uniform_(fc.Weight, -initrange, initrange);
-            init.zeros_(fc.Bias);
+            init.uniform_(embedding.weight, -initrange, initrange);
+            init.uniform_(fc.weight, -initrange, initrange);
+            init.zeros_(fc.bias);
         }
 
         public override Tensor forward(Tensor t)
@@ -47,7 +47,7 @@ namespace TorchSharp.Examples
 
         public override Tensor forward(Tensor input, Tensor offsets)
         {
-            using var t = embedding.forward(input, offsets);
+            var t = embedding.forward(input, offsets);
             return fc.forward(t);
         }
 

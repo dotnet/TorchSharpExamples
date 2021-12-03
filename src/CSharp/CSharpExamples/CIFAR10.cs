@@ -49,7 +49,8 @@ namespace CSharpExamples
                 torch.cuda.is_available() ? torch.CUDA :
                 torch.CPU;
 
-            if (device.type == DeviceType.CUDA) {
+            if (device.type == DeviceType.CUDA)
+            {
                 _trainBatchSize *= 8;
                 _testBatchSize *= 8;
             }
@@ -61,7 +62,8 @@ namespace CSharpExamples
             var sourceDir = _dataLocation;
             var targetDir = Path.Combine(_dataLocation, "test_data");
 
-            if (!Directory.Exists(targetDir)) {
+            if (!Directory.Exists(targetDir))
+            {
                 Directory.CreateDirectory(targetDir);
                 Decompress.ExtractTGZ(Path.Combine(sourceDir, "cifar-10-binary.tar.gz"), targetDir);
             }
@@ -70,40 +72,41 @@ namespace CSharpExamples
 
             Module model = null;
 
-            switch (modelName.ToLower()) {
-            case "alexnet":
-                model = new AlexNet(modelName, _numClasses, device);
-                break;
-            case "mobilenet":
-                model = new MobileNet(modelName, _numClasses, device);
-                break;
-            case "vgg11":
-            case "vgg13":
-            case "vgg16":
-            case "vgg19":
-                model = new VGG(modelName, _numClasses, device);
-                break;
-            case "resnet18":
-                model = ResNet.ResNet18(_numClasses, device);
-                break;
-            case "resnet34":
-                _testBatchSize /= 4; 
-                model = ResNet.ResNet34(_numClasses, device);
-                break;
-            case "resnet50":
-                _trainBatchSize /= 6;
-                _testBatchSize /= 8;
-                model = ResNet.ResNet50(_numClasses, device);
-                break;
-            case "resnet101":
-                _trainBatchSize /= 6;
-                _testBatchSize /= 8;
-                model = ResNet.ResNet101(_numClasses, device);
-                break;
-            case "resnet152":
-                _testBatchSize /= 4;
-                model = ResNet.ResNet152(_numClasses, device);
-                break;
+            switch (modelName.ToLower())
+            {
+                case "alexnet":
+                    model = new AlexNet(modelName, _numClasses, device);
+                    break;
+                case "mobilenet":
+                    model = new MobileNet(modelName, _numClasses, device);
+                    break;
+                case "vgg11":
+                case "vgg13":
+                case "vgg16":
+                case "vgg19":
+                    model = new VGG(modelName, _numClasses, device);
+                    break;
+                case "resnet18":
+                    model = ResNet.ResNet18(_numClasses, device);
+                    break;
+                case "resnet34":
+                    _testBatchSize /= 4;
+                    model = ResNet.ResNet34(_numClasses, device);
+                    break;
+                case "resnet50":
+                    _trainBatchSize /= 6;
+                    _testBatchSize /= 8;
+                    model = ResNet.ResNet50(_numClasses, device);
+                    break;
+                case "resnet101":
+                    _trainBatchSize /= 6;
+                    _testBatchSize /= 8;
+                    model = ResNet.ResNet101(_numClasses, device);
+                    break;
+                case "resnet152":
+                    _testBatchSize /= 4;
+                    model = ResNet.ResNet152(_numClasses, device);
+                    break;
             }
 
             var hflip = transforms.HorizontalFlip();
@@ -116,19 +119,20 @@ namespace CSharpExamples
 
             using (var train = new CIFARReader(targetDir, false, _trainBatchSize, shuffle: true, device: device, transforms: new ITransform[] { }))
             using (var test = new CIFARReader(targetDir, true, _testBatchSize, device: device))
-            using (var optimizer = torch.optim.Adam(model.parameters(), 0.001)) {
+            using (var optimizer = torch.optim.Adam(model.parameters(), 0.001))
+            {
 
                 Stopwatch totalSW = new Stopwatch();
                 totalSW.Start();
 
-                for (var epoch = 1; epoch <= epochs; epoch++) {
+                for (var epoch = 1; epoch <= epochs; epoch++)
+                {
 
                     Stopwatch epchSW = new Stopwatch();
                     epchSW.Start();
 
                     Train(model, optimizer, nll_loss(), train.Data(), epoch, _trainBatchSize, train.Size);
                     Test(model, nll_loss(), test.Data(), test.Size);
-                    GC.Collect();
 
                     epchSW.Stop();
                     Console.WriteLine($"Elapsed time for this epoch: {epchSW.Elapsed.TotalSeconds} s.");
@@ -160,13 +164,16 @@ namespace CSharpExamples
 
             Console.WriteLine($"Epoch: {epoch}...");
 
-            foreach (var (data, target) in dataLoader) {
+            foreach (var (data, target) in dataLoader)
+            {
 
-                optimizer.zero_grad();
+                using (var d = torch.NewDisposeScope())
+                {
+                    optimizer.zero_grad();
 
-                using var prediction = model.forward(data);
-                using var lsm = log_softmax(prediction, 1);
-                using (var output = loss(lsm, target)) {
+                    var prediction = model.forward(data);
+                    var lsm = log_softmax(prediction, 1);
+                    var output = loss(lsm, target);
 
                     output.backward();
 
@@ -174,21 +181,16 @@ namespace CSharpExamples
 
                     total += target.shape[0];
 
-                    using (var predicted = prediction.argmax(1))
-                    using (var eq = predicted.eq(target))
-                    using (var sum = eq.sum()) {
-                        correct += sum.ToInt64();
-                    }
+                    correct += prediction.argmax(1).eq(target).ToInt64();
 
-                    if (batchId % _logInterval == 0) {
+                    if (batchId % _logInterval == 0)
+                    {
                         var count = Math.Min(batchId * batchSize, size);
                         Console.WriteLine($"\rTrain: epoch {epoch} [{count} / {size}] Loss: {output.ToSingle().ToString("0.000000")} | Accuracy: { ((float)correct / total).ToString("0.000000") }");
                     }
 
                     batchId++;
                 }
-
-                GC.Collect();
             }
         }
 
@@ -204,23 +206,20 @@ namespace CSharpExamples
             long correct = 0;
             int batchCount = 0;
 
-            foreach (var (data, target) in dataLoader) {
+            foreach (var (data, target) in dataLoader)
+            {
 
-                using var prediction = model.forward(data);
-                using var lsm = log_softmax(prediction, 1);
-                using (var output = loss(lsm, target)) {
+                using (var d = torch.NewDisposeScope())
+                {
+                    var prediction = model.forward(data);
+                    var lsm = log_softmax(prediction, 1);
+                    var output = loss(lsm, target);
 
                     testLoss += output.ToSingle();
                     batchCount += 1;
 
-                    using (var predicted = prediction.argmax(1))
-                    using (var eq = predicted.eq(target))
-                    using (var sum = eq.sum()) {
-                        correct += sum.ToInt64();
-                    }
+                    correct += prediction.argmax(1).eq(target).ToInt64();
                 }
-
-                GC.Collect();
             }
 
             Console.WriteLine($"\rTest set: Average loss {(testLoss / batchCount).ToString("0.0000")} | Accuracy {((float)correct / size).ToString("0.0000")}");

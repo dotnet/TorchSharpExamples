@@ -44,7 +44,7 @@ namespace TorchSharp.Examples
 
         public Tensor GenerateSquareSubsequentMask(long size)
         {
-            using var mask = (torch.ones(new long[] { size, size }) == 1).triu().transpose(0, 1);
+            var mask = (torch.ones(new long[] { size, size }) == 1).triu().transpose(0, 1);
             return mask.to_type(ScalarType.Float32)
                 .masked_fill(mask == 0, float.NegativeInfinity)
                 .masked_fill(mask == 1, 0.0f).to(device);
@@ -54,9 +54,9 @@ namespace TorchSharp.Examples
         {
             var initrange = 0.1;
 
-            init.uniform_(encoder.Weight, -initrange, initrange);
-            init.zeros_(decoder.Bias);
-            init.uniform_(decoder.Weight, -initrange, initrange);
+            init.uniform_(encoder.weight, -initrange, initrange);
+            init.zeros_(decoder.bias);
+            init.uniform_(decoder.weight, -initrange, initrange);
         }
 
         public override Tensor forward(Tensor t)
@@ -99,7 +99,7 @@ namespace TorchSharp.Examples
 
         public override Tensor forward(Tensor t)
         {
-            using var x = t + pe[TensorIndex.Slice(null, t.shape[0]), TensorIndex.Slice()];
+            var x = t + pe[TensorIndex.Slice(null, t.shape[0]), TensorIndex.Slice()];
             return dropout.forward(x);
         }
     }

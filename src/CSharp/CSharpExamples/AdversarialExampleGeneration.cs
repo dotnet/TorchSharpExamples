@@ -148,24 +148,26 @@ namespace CSharpExamples
 
             foreach (var (data, target) in dataLoader) {
 
-                data.requires_grad = true;
+                using (var d = torch.NewDisposeScope())
+                {
+                    data.requires_grad = true;
 
-                using (var output = model.forward(data))
-                using (var loss = criterion(output, target)) {
+                    using (var output = model.forward(data))
+                    using (var loss = criterion(output, target))
+                    {
 
-                    model.zero_grad();
-                    loss.backward();
+                        model.zero_grad();
+                        loss.backward();
 
-                    var perturbed = Attack(data, ε, data.grad());
+                        var perturbed = Attack(data, ε, data.grad());
 
-                    using (var final = model.forward(perturbed)) {
+                        using (var final = model.forward(perturbed))
+                        {
 
-                        correct += final.argmax(1).eq(target).sum().ToInt32();
+                            correct += final.argmax(1).eq(target).sum().ToInt32();
+                        }
                     }
                 }
-
-
-                GC.Collect();
             }
 
             return (double)correct / size;
