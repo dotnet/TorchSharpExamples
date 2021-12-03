@@ -29,11 +29,11 @@ let main args =
             | true,t -> t
             | false,_ -> 3600
 
-        for idx = 0 to argumentParser.Count do
+        for idx = 0 to argumentParser.Count-1 do
 
             let modelName = argumentParser.[idx]
 
-            match modelName with
+            match modelName.ToLowerInvariant() with
             | "mnist" -> FSharpExamples.MNIST.run epochs
             | "fgsm"  -> FSharpExamples.AdversarialExampleGeneration.run epochs
             | "alexnet" -> FSharpExamples.AlexNet.run epochs

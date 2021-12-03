@@ -55,14 +55,16 @@ namespace CSharpExamples
 
             Console.WriteLine($"\tPreparing training and test data...");
 
-            using (var reader = TorchText.Data.AG_NEWSReader.AG_NEWS("train", (Device)device, _dataLocation)) {
+            using (var reader = TorchText.Data.AG_NEWSReader.AG_NEWS("train", (Device)device, _dataLocation))
+            {
 
                 var dataloader = reader.Enumerate();
 
                 var tokenizer = TorchText.Data.Utils.get_tokenizer("basic_english");
 
                 var counter = new TorchText.Vocab.Counter<string>();
-                foreach (var (label, text) in dataloader) {
+                foreach (var (label, text) in dataloader)
+                {
                     counter.update(tokenizer(text));
                 }
 
@@ -82,7 +84,8 @@ namespace CSharpExamples
                 var totalTime = new Stopwatch();
                 totalTime.Start();
 
-                foreach (var epoch in Enumerable.Range(1, epochs)) {
+                foreach (var epoch in Enumerable.Range(1, epochs))
+                {
 
                     var sw = new Stopwatch();
                     sw.Start();
@@ -91,7 +94,7 @@ namespace CSharpExamples
 
                     sw.Stop();
 
-                    Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {scheduler.LearningRate:0.0000} | time: {sw.Elapsed.TotalSeconds:0.0}s\n");
+                    Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {optimizer.LearningRate:0.0000} | time: {sw.Elapsed.TotalSeconds:0.0}s\n");
                     scheduler.step();
 
                     if (totalTime.Elapsed.TotalSeconds > timeout) break;
@@ -99,7 +102,8 @@ namespace CSharpExamples
 
                 totalTime.Stop();
 
-                using (var test_reader = TorchText.Data.AG_NEWSReader.AG_NEWS("test", (Device)device, _dataLocation)) {
+                using (var test_reader = TorchText.Data.AG_NEWSReader.AG_NEWS("test", (Device)device, _dataLocation))
+                {
 
                     var sw = new Stopwatch();
                     sw.Start();
@@ -127,32 +131,33 @@ namespace CSharpExamples
 
             var batch_count = train_data.Count();
 
-            foreach (var (labels, texts, offsets) in train_data) {
+            using (var d = torch.NewDisposeScope())
+            {
+                foreach (var (labels, texts, offsets) in train_data)
+                {
 
-                optimizer.zero_grad();
+                    optimizer.zero_grad();
 
-                using (var predicted_labels = model.forward(texts, offsets)) {
+                    using (var predicted_labels = model.forward(texts, offsets))
+                    {
 
-                    var loss = criterion(predicted_labels, labels);
-                    loss.backward();
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5);
-                    optimizer.step();
+                        var loss = criterion(predicted_labels, labels);
+                        loss.backward();
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5);
+                        optimizer.step();
 
-                    total_acc += (predicted_labels.argmax(1) == labels).sum().to(torch.CPU).item<long>();
-                    total_count += labels.size(0);
+                        total_acc += (predicted_labels.argmax(1) == labels).sum().to(torch.CPU).item<long>();
+                        total_count += labels.size(0);
+                    }
+
+                    if (batch % log_interval == 0 && batch > 0)
+                    {
+                        var accuracy = total_acc / total_count;
+                        Console.WriteLine($"epoch: {epoch} | batch: {batch} / {batch_count} | accuracy: {accuracy:0.00}");
+                    }
+                    batch += 1;
                 }
-
-                if (batch % log_interval == 0 && batch > 0) {
-                    var accuracy = total_acc / total_count;
-                    Console.WriteLine($"epoch: {epoch} | batch: {batch} / {batch_count} | accuracy: {accuracy:0.00}");
-                }
-                batch += 1;
             }
-
-            // This data set is small enough that we can get away with
-            // collecting memory only once per epoch.
-
-            GC.Collect();
         }
 
         static double evaluate(IEnumerable<(Tensor, Tensor, Tensor)> test_data, TextClassificationModel model, Loss criterion)
@@ -162,17 +167,22 @@ namespace CSharpExamples
             double total_acc = 0.0;
             long total_count = 0;
 
-            foreach (var (labels, texts, offsets) in test_data) {
+            using (var d = torch.NewDisposeScope())
+            {
+                foreach (var (labels, texts, offsets) in test_data)
+                {
 
-                using (var predicted_labels = model.forward(texts, offsets)) {
-                    var loss = criterion(predicted_labels, labels);
+                    using (var predicted_labels = model.forward(texts, offsets))
+                    {
+                        var loss = criterion(predicted_labels, labels);
 
-                    total_acc += (predicted_labels.argmax(1) == labels).sum().to(torch.CPU).item<long>();
-                    total_count += labels.size(0);
+                        total_acc += (predicted_labels.argmax(1) == labels).sum().to(torch.CPU).item<long>();
+                        total_count += labels.size(0);
+                    }
                 }
-            }
 
-            return total_acc / total_count;
+                return total_acc / total_count;
+            }
         }
     }
 }

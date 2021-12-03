@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FSharpExamples": {
+      "commandName": "Project",
+      "commandLineArgs": "-e 5 MNIST"
+    }
+  }
+}

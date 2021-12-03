@@ -90,9 +90,9 @@ type TransformerModel(ntokens, device:torch.Device) as this =
     do
         let initrange = 0.1
 
-        init.uniform_(encoder.Weight, -initrange, initrange) |> ignore
-        init.zeros_(decoder.Bias) |> ignore
-        init.uniform_(decoder.Weight, -initrange, initrange) |> ignore
+        init.uniform_(encoder.weight, -initrange, initrange) |> ignore
+        init.zeros_(decoder.bias) |> ignore
+        init.uniform_(decoder.weight, -initrange, initrange) |> ignore
 
         this.RegisterComponents()
 
@@ -151,6 +151,8 @@ let train epoch (model:TransformerModel) (optimizer:Optimizer) (trainData:torch.
 
     while i < tdlen - 2L  do
 
+        use d = torch.NewDisposeScope()
+    
         begin
             let data,targets = get_batch trainData i
             use data = data
@@ -169,9 +171,7 @@ let train epoch (model:TransformerModel) (optimizer:Optimizer) (trainData:torch.
             optimizer.step() |> ignore
 
             total_loss <- total_loss + loss.cpu().item<float32>()
-        end 
-
-        GC.Collect()
+        end
 
         if (batch % logInterval = 0) && (batch > 0) then
             let cur_loss = (total_loss / (float32 logInterval)).ToString("0.00")
@@ -197,6 +197,8 @@ let evaluate (model:TransformerModel) (evalData:torch.Tensor) ntokens =
 
     while i < tdlen - 2L  do
 
+        use d = torch.NewDisposeScope()
+
         begin
             let data,targets = get_batch evalData i
             use data = data
@@ -210,8 +212,6 @@ let evaluate (model:TransformerModel) (evalData:torch.Tensor) ntokens =
             use loss = criterion (output.view(-1L, ntokens)) targets
             total_loss <- total_loss + (float32 data.shape.[0]) * loss.cpu().item<float32>()
         end 
-
-        GC.Collect()
 
         batch <- batch + 1L
         i <- i + bptt
@@ -259,7 +259,7 @@ let run epochs =
         let val_loss = evaluate model valid_data ntokens
         sw.Stop()
 
-        let lrStr = scheduler.LearningRate.ToString("0.00")
+        let lrStr = optimizer.LearningRate.ToString("0.00")
         let elapsed = sw.Elapsed.TotalSeconds.ToString("0.0")
         let lossStr = val_loss.ToString("0.00")
 
