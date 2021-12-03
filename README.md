@@ -2,7 +2,9 @@
 
 This repo holds examples and tutorials related to [TorchSharp](https://github.com/dotnet/TorchSharp), .NET-only bindings to libtorch, the engine behind PyTorch. If you are trying to familiarize yourself with TorchSharp, rather than contributing to it, this is the place to go.
 
-Currently, the examples are the same that are also found in the TorchSharp repo. Unlike the setup in that repo, where the examples are part of the overall VS solution file and use project references to pick up the TorchSharp dependencies, in this repo, the example solution is using the publically available TorchSharp packages form NuGet. It builds faster, and is more like the 
+Currently, the examples are the same that are also found in the TorchSharp repo. Unlike the setup in that repo, where the examples are part of the overall VS solution file and use project references to pick up the TorchSharp dependencies, in this repo, the example solution is using the publically available TorchSharp packages form NuGet.
+
+The examples and tutorials assume that you are on the latest version of TorchSharp, which currently is 0.95.4.
 
 ### System / Environment Requirements
 
