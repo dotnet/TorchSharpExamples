@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31702.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Examples.Utils", "Utils\Examples.Utils.csproj", "{9B26E338-1AAD-4E64-B9EA-CE6D1C10A9E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "CSharp\Models\Models.csproj", "{AF43A5E5-DBAE-46CE-9B06-69F2F34140FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpExamples", "CSharp\CSharpExamples\CSharpExamples.csproj", "{E56038AD-B99F-4333-BA8C-3F65C95C638E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharpExamples", "CSharp\CSharpExamples\CSharpExamples.csproj", "{E56038AD-B99F-4333-BA8C-3F65C95C638E}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpExamples", "FSharp\FSharpExamples\FSharpExamples.fsproj", "{E9B24578-E02C-4B9B-B4A4-2458E876E8C1}"
 EndProject

@@ -88,7 +88,7 @@ let loss x y = functional.nll_loss().Invoke(x,y)
 
 let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
 
-    model.Train()
+    model.train()
 
     let size = dataLoader.Size
 
@@ -126,7 +126,7 @@ let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
         end
 
 let test (model:Model) (dataLoader:CIFARReader) =
-    model.Eval()
+    model.eval()
 
     let sz = float32 dataLoader.Size
 
