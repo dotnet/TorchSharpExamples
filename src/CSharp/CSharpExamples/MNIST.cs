@@ -137,7 +137,7 @@ namespace CSharpExamples
             long batchSize,
             long size)
         {
-            model.Train();
+            model.train();
 
             int batchId = 1;
 
@@ -174,7 +174,7 @@ namespace CSharpExamples
             IEnumerable<(Tensor, Tensor)> dataLoader,
             long size)
         {
-            model.Eval();
+            model.eval();
 
             double testLoss = 0;
             int correct = 0;

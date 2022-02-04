@@ -117,7 +117,7 @@ namespace CSharpExamples
 
         private static void train(int epoch, Tensor train_data, TransformerModel model, Loss criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
         {
-            model.Train();
+            model.train();
 
             var total_loss = 0.0f;
 
@@ -166,7 +166,7 @@ namespace CSharpExamples
 
         private static double evaluate(Tensor eval_data, TransformerModel model, Loss criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
         {
-            model.Eval();
+            model.eval();
 
             using (var d = torch.NewDisposeScope())
             {

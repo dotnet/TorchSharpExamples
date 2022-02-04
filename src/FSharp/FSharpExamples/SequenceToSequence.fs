@@ -138,7 +138,7 @@ let get_batch (source:torch.Tensor) (index:int64) =
 
 let train epoch (model:TransformerModel) (optimizer:Optimizer) (trainData:torch.Tensor) ntokens =
 
-    model.Train()
+    model.train()
 
     let mutable total_loss = 0.0f
     let mutable src_mask = model.GenerateSquareSubsequentMask(bptt)
@@ -184,7 +184,7 @@ let train epoch (model:TransformerModel) (optimizer:Optimizer) (trainData:torch.
 
 let evaluate (model:TransformerModel) (evalData:torch.Tensor) ntokens =
 
-    model.Eval()
+    model.eval()
 
     let mutable total_loss = 0.0f
     let mutable src_mask = model.GenerateSquareSubsequentMask(bptt)
