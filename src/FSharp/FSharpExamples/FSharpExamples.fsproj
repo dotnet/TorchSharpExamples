@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.95.4" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.96.0" />
   </ItemGroup>
 
   <ItemGroup>
