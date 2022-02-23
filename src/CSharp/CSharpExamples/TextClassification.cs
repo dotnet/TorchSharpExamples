@@ -94,7 +94,7 @@ namespace CSharpExamples
 
                     sw.Stop();
 
-                    Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {optimizer.LearningRate:0.0000} | time: {sw.Elapsed.TotalSeconds:0.0}s\n");
+                    Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {optimizer.ParamGroups.First().LearningRate:0.0000} | time: {sw.Elapsed.TotalSeconds:0.0}s\n");
                     scheduler.step();
 
                     if (totalTime.Elapsed.TotalSeconds > timeout) break;
