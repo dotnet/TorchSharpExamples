@@ -19,11 +19,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.96.0" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.96.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Utils\Examples.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="6.0.3" />
   </ItemGroup>
 
 </Project>

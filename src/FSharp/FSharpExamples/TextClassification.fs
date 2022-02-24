@@ -149,7 +149,7 @@ let run epochs =
 
         sw.Stop()
 
-        let lrStr = optimizer.LearningRate.ToString("0.0000")
+        let lrStr = optimizer.ParamGroups.First().LearningRate.ToString("0.0000")
         let tsStr = sw.Elapsed.TotalSeconds.ToString("0.0")
         printfn $"\nEnd of epoch: {epoch} | lr: {lrStr} | time: {tsStr}s\n"
         scheduler.step() |> ignore
