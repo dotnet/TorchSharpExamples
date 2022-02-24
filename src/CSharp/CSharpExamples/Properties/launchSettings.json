@@ -2,7 +2,7 @@
   "profiles": {
     "CSharpExamples": {
       "commandName": "Project",
-      "commandLineArgs": "-e 2 fashion-mnist"
+      "commandLineArgs": "-e 10 vgg11"
     }
   }
 }

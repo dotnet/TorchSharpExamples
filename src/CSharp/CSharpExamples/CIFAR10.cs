@@ -181,7 +181,7 @@ namespace CSharpExamples
 
                     total += target.shape[0];
 
-                    correct += prediction.argmax(1).eq(target).ToInt64();
+                    correct += prediction.argmax(1).eq(target).sum().ToInt64();
 
                     if (batchId % _logInterval == 0)
                     {
@@ -218,7 +218,7 @@ namespace CSharpExamples
                     testLoss += output.ToSingle();
                     batchCount += 1;
 
-                    correct += prediction.argmax(1).eq(target).ToInt64();
+                    correct += prediction.argmax(1).eq(target).sum().ToInt64();
                 }
             }
 
