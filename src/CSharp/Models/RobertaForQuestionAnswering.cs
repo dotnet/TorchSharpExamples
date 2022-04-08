@@ -54,7 +54,7 @@ namespace TorchSharp.Examples
             if (module is Linear linearModule)
             {
                 linearModule.weight.normal_(mean: 0.0, stddev: 0.02);
-                if (linearModule.bias.IsNotNull())
+                if (linearModule.bias is not null && !linearModule.bias.IsInvalid)
                 {
                     linearModule.bias.zero_();
                 }
