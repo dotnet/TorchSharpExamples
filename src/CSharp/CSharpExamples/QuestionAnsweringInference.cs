@@ -145,7 +145,7 @@ namespace CSharpExamples
             while (true)
             {
                 Console.Clear();
-                Console.Write($"\nType your question (\"{_exit}\" to exit): ");
+                Console.Write($"Type your question (\"{_exit}\" to exit): ");
                 var question = Console.ReadLine();
                 if (question == _exit) break;
 
@@ -181,6 +181,9 @@ namespace CSharpExamples
                     answers = answers.OrderByDescending(answer => answer.Score).Take(Config.TopK).ToList();
                     var outputString = JsonSerializer.Serialize(answers, serializerOptions);
                     Console.WriteLine($"Predictions:\n{outputString}");
+
+                    Console.Write("\nHit Enter Key to ask next question.");
+                    Console.ReadLine();
                 } // end foreach
             } // end while
         }
