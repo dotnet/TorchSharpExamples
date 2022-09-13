@@ -42,7 +42,7 @@ namespace CSharpExamples
         // This path assumes that you're running this on Windows.
         private readonly static string _dataLocation = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "..", "Downloads", "AG_NEWS");
 
-        internal static void Run(int epochs, int timeout)
+        internal static void Run(int epochs, int timeout, string logdir)
         {
             torch.random.manual_seed(1);
 

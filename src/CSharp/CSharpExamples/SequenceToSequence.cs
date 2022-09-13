@@ -44,7 +44,7 @@ namespace CSharpExamples
         private const int batch_size = 64;
         private const int eval_batch_size = 32;
 
-        internal static void Run(int epochs, int timeout)
+        internal static void Run(int epochs, int timeout, string logdir)
 
         {
             torch.random.manual_seed(1);
@@ -89,6 +89,8 @@ namespace CSharpExamples
             var optimizer = torch.optim.SGD(model.parameters(), lr);
             var scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, 0.95, last_epoch: 15);
 
+            var writer = String.IsNullOrEmpty(logdir) ? null : torch.utils.tensorboard.SummaryWriter(logdir, createRunName: true);
+
             var totalTime = new Stopwatch();
             totalTime.Start();
 
@@ -105,6 +107,11 @@ namespace CSharpExamples
 
                 Console.WriteLine($"\nEnd of epoch: {epoch} | lr: {optimizer.ParamGroups.First().LearningRate:0.00} | time: {sw.Elapsed.TotalSeconds:0.0}s | loss: {val_loss:0.00}\n");
                 scheduler.step();
+
+                if (writer != null)
+                {
+                    writer.add_scalar("seq2seq/loss", (float)val_loss, epoch);
+                }
 
                 if (totalTime.Elapsed.TotalSeconds > timeout) break;
             }

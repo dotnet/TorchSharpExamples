@@ -20,6 +20,7 @@ namespace CSharpExamples
 
             var epochs = argumentParser.TryGetValueInt("epochs", out int e) ? e : 16;
             var timeout = argumentParser.TryGetValueInt("timeout", out int t) ? t : 3600;
+            var logdir = argumentParser.TryGetValueString("logdir", out string ld) ? ld : null;
 
             for (var idx = 0; idx < argumentParser.Count; idx++)
             {
@@ -27,12 +28,12 @@ namespace CSharpExamples
                 {
                     case "mnist":
                     case "fashion-mnist":
-                        MNIST.Run(epochs, timeout, argumentParser[idx].ToLower());
+                        MNIST.Run(epochs, timeout, logdir, argumentParser[idx].ToLower());
                         break;
 
                     case "fgsm":
                     case "fashion-fgsm":
-                        AdversarialExampleGeneration.Run(epochs, timeout, argumentParser[idx].ToLower());
+                        AdversarialExampleGeneration.Run(epochs, timeout, logdir, argumentParser[idx].ToLower());
                         break;
 
                     case "alexnet":
@@ -50,15 +51,15 @@ namespace CSharpExamples
                     case "vgg13":
                     case "vgg16":
                     case "vgg19":
-                        CIFAR10.Run(epochs, timeout, argumentParser[idx]);
+                        CIFAR10.Run(epochs, timeout, logdir, argumentParser[idx]);
                         break;
 
                     case "text":
-                        TextClassification.Run(epochs, timeout);
+                        TextClassification.Run(epochs, timeout, logdir);
                         break;
 
                     case "seq2seq":
-                        SequenceToSequence.Run(epochs, timeout);
+                        SequenceToSequence.Run(epochs, timeout, logdir);
                         break;
 
                     default:

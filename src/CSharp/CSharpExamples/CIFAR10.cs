@@ -39,7 +39,7 @@ namespace CSharpExamples
         private readonly static int _logInterval = 25;
         private readonly static int _numClasses = 10;
 
-        internal static void Run(int epochs, int timeout, string modelName)
+        internal static void Run(int epochs, int timeout, string logdir, string modelName)
         {
             torch.random.manual_seed(1);
 
@@ -58,6 +58,8 @@ namespace CSharpExamples
             Console.WriteLine();
             Console.WriteLine($"\tRunning {modelName} with {_dataset} on {device.type.ToString()} for {epochs} epochs, terminating after {TimeSpan.FromSeconds(timeout)}.");
             Console.WriteLine();
+
+            var writer = String.IsNullOrEmpty(logdir) ? null : torch.utils.tensorboard.SummaryWriter(logdir, createRunName: true);
 
             var sourceDir = _dataLocation;
             var targetDir = Path.Combine(_dataLocation, "test_data");
@@ -132,7 +134,7 @@ namespace CSharpExamples
                     epchSW.Start();
 
                     Train(model, optimizer, nll_loss(), train.Data(), epoch, _trainBatchSize, train.Size);
-                    Test(model, nll_loss(), test.Data(), test.Size);
+                    Test(model, nll_loss(), writer, modelName.ToLower(), test.Data(), epoch, test.Size);
 
                     epchSW.Stop();
                     Console.WriteLine($"Elapsed time for this epoch: {epchSW.Elapsed.TotalSeconds} s.");
@@ -197,7 +199,10 @@ namespace CSharpExamples
         private static void Test(
             Module model,
             Loss loss,
+            TorchSharp.Modules.SummaryWriter writer,
+            string modelName,
             IEnumerable<(Tensor, Tensor)> dataLoader,
+            int epoch,
             long size)
         {
             model.eval();
@@ -223,6 +228,12 @@ namespace CSharpExamples
             }
 
             Console.WriteLine($"\rTest set: Average loss {(testLoss / batchCount).ToString("0.0000")} | Accuracy {((float)correct / size).ToString("0.0000")}");
+
+            if (writer != null)
+            {
+                writer.add_scalar($"{modelName}/loss", (float)(testLoss / size), epoch);
+                writer.add_scalar($"{modelName}/accuracy", (float)correct / size, epoch);
+            }
         }
     }
 }

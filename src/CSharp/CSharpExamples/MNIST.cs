@@ -43,7 +43,7 @@ namespace CSharpExamples
 
         private readonly static int _logInterval = 100;
 
-        internal static void Run(int epochs, int timeout, string dataset)
+        internal static void Run(int epochs, int timeout, string logdir, string dataset)
         {
             _epochs = epochs;
 
@@ -64,6 +64,7 @@ namespace CSharpExamples
 
             var cwd = Environment.CurrentDirectory;
 
+            var writer = String.IsNullOrEmpty(logdir) ? null : torch.utils.tensorboard.SummaryWriter(logdir, createRunName: true);
 
             var sourceDir = datasetPath;
             var targetDir = Path.Combine(datasetPath, "test_data");
@@ -96,11 +97,11 @@ namespace CSharpExamples
                                 test = new MNISTReader(targetDir, "t10k", _testBatchSize, device: device, transform: normImage))
             {
 
-                TrainingLoop(dataset, timeout, device, model, train, test);
+                TrainingLoop(dataset, timeout, writer, device, model, train, test);
             }
         }
 
-        internal static void TrainingLoop(string dataset, int timeout, Device device, Module model, MNISTReader train, MNISTReader test)
+        internal static void TrainingLoop(string dataset, int timeout, TorchSharp.Modules.SummaryWriter writer, Device device, Module model, MNISTReader train, MNISTReader test)
         {
             var optimizer = optim.Adam(model.parameters());
 
@@ -113,7 +114,7 @@ namespace CSharpExamples
             {
 
                 Train(model, optimizer, nll_loss(reduction: Reduction.Mean), device, train, epoch, train.BatchSize, train.Size);
-                Test(model, nll_loss(reduction: nn.Reduction.Sum), device, test, test.Size);
+                Test(model, nll_loss(reduction: nn.Reduction.Sum), writer, device, test, epoch, test.Size);
 
                 Console.WriteLine($"End-of-epoch memory use: {GC.GetTotalMemory(false)}");
 
@@ -135,7 +136,7 @@ namespace CSharpExamples
             IEnumerable<(Tensor, Tensor)> dataLoader,
             int epoch,
             long batchSize,
-            long size)
+            int size)
         {
             model.train();
 
@@ -162,17 +163,19 @@ namespace CSharpExamples
                     }
 
                     batchId++;
-
                 }
+
             }
         }
 
         private static void Test(
             Module model,
             Loss loss,
+            TorchSharp.Modules.SummaryWriter writer,
             Device device,
             IEnumerable<(Tensor, Tensor)> dataLoader,
-            long size)
+            int epoch,
+            int size)
         {
             model.eval();
 
@@ -194,6 +197,12 @@ namespace CSharpExamples
             Console.WriteLine($"Size: {size}, Total: {size}");
 
             Console.WriteLine($"\rTest set: Average loss {(testLoss / size):F4} | Accuracy {((double)correct / size):P2}");
+
+            if (writer != null)
+            {
+                writer.add_scalar("MNIST/loss", (float)(testLoss / size), epoch);
+                writer.add_scalar("MNIST/accuracy", (float)correct / size, epoch);
+            }
         }
     }
 }
