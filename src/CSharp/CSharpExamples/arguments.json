@@ -1,14 +1,20 @@
 ﻿[
-    {
-        "longName": "epochs",
-        "shortName": "e",
-        "argType": "integer",
-        "explanation": "The maximum number of epochs to use for training."
-    },
-    {
-        "longName": "timeout",
-        "shortName": "t",
-        "argType": "integer",
-        "explanation": "The maximum time, measured in seconds, to use for training."
-    }
+  {
+    "longName": "epochs",
+    "shortName": "e",
+    "argType": "integer",
+    "explanation": "The maximum number of epochs to use for training."
+  },
+  {
+    "longName": "timeout",
+    "shortName": "t",
+    "argType": "integer",
+    "explanation": "The maximum time, measured in seconds, to use for training."
+  },
+  {
+    "longName": "logdir",
+    "shortName": "l",
+    "argType": "string",
+    "explanation": "A directory for Tensorboard logging."
+  }
 ]

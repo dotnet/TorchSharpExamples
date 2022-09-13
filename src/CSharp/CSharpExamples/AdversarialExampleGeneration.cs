@@ -52,7 +52,7 @@ namespace CSharpExamples
         private static int _trainBatchSize = 64;
         private static int _testBatchSize = 128;
 
-        static internal void Run(int epochs, int timeout, string dataset)
+        static internal void Run(int epochs, int timeout, string logdir, string dataset)
         {
             _epochs = epochs;
 
@@ -84,6 +84,8 @@ namespace CSharpExamples
             var sourceDir = _dataLocation;
             var targetDir = Path.Combine(_dataLocation, "test_data");
 
+            var writer = String.IsNullOrEmpty(logdir) ? null : torch.utils.tensorboard.SummaryWriter(logdir, createRunName:true);
+
             if (!Directory.Exists(targetDir)) {
                 Directory.CreateDirectory(targetDir);
                 Decompress.DecompressGZipFile(Path.Combine(sourceDir, "train-images-idx3-ubyte.gz"), targetDir);
@@ -107,7 +109,7 @@ namespace CSharpExamples
                     model = new TorchSharp.Examples.MNIST.Model("model", device);
 
                     using (var train = new MNISTReader(targetDir, "train", _trainBatchSize, device: device, shuffle: true, transform: normImage)) {
-                        MNIST.TrainingLoop(dataset, timeout, (Device)device, model, train, test);
+                        MNIST.TrainingLoop(dataset, timeout, writer, (Device)device, model, train, test);
                     }
 
                     Console.WriteLine("Moving on to the Adversarial model.\n");
