@@ -10,7 +10,7 @@ The examples and tutorials assume that you are on the latest version of TorchSha
 
 In order to use TorchSharp, you will need both the most recent TorchSharp package, as well as one of the several libtorch-* packages that are available. The most basic one, which is used in this repository, is the libtorch-cpu package. As the name suggests, it uses a CPU backend to do training and inference.
 
-There is also support for CUDA (10.2 and 11.1) on both Windows and Linux, and each of these combinations has its own NuGet package. If you want to train on CUDA, you need to replace references to libtorch-cpu in the solution and projects.
+There is also support for CUDA 11.3 on both Windows and Linux, and each of these combinations has its own NuGet package. If you want to train on CUDA, you need to replace references to libtorch-cpu in the solution and projects.
 
 __Note__: Starting with NuGet release 0.93.4, we have simplified the package structure, so you only need to select one of these three packages, and it will include the others:
 
