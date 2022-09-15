@@ -1,3 +1,5 @@
+[![Gitter](https://badges.gitter.im/dotnet/TorchSharp.svg)](https://gitter.im/dotnet/TorchSharp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+<br/>
 # TorchSharp Examples
 
 This repo holds examples and tutorials related to [TorchSharp](https://github.com/dotnet/TorchSharp), .NET-only bindings to libtorch, the engine behind PyTorch. If you are trying to familiarize yourself with TorchSharp, rather than contributing to it, this is the place to go.
