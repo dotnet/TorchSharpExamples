@@ -4,7 +4,7 @@ This repo holds examples and tutorials related to [TorchSharp](https://github.co
 
 Currently, the examples are the same that are also found in the TorchSharp repo. Unlike the setup in that repo, where the examples are part of the overall VS solution file and use project references to pick up the TorchSharp dependencies, in this repo, the example solution is using the publically available TorchSharp packages form NuGet.
 
-The examples and tutorials assume that you are on the latest version of TorchSharp, which currently is 0.95.4.
+The examples and tutorials assume that you are on the latest version of TorchSharp, which currently is 0.97.5.
 
 ### System / Environment Requirements
 
