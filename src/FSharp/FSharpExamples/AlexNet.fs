@@ -33,7 +33,7 @@ let datasetPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.
 
 torch.random.manual_seed(1L) |> ignore
 
-let hasCUDA = torch.cuda.is_available()
+let hasCUDA = TorchText.Datasets.cuda_is_available()
 
 let device = if hasCUDA then torch.CUDA else torch.CPU
 
@@ -44,32 +44,32 @@ let getDataFiles sourceDir targetDir =
         Utils.Decompress.ExtractTGZ(Path.Combine(sourceDir, "cifar-10-binary.tar.gz"), targetDir)
 
 type Model(name,device:torch.Device) as this =
-    inherit Module(name)
+    inherit Module<torch.Tensor,torch.Tensor>(name)
 
-    let features = Sequential(("c1", Conv2d(3L, 64L, kernelSize=3L, stride=2L, padding=1L) :> Module),
-                              ("r1", ReLU(inPlace=true) :> Module),
-                              ("mp1", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module),
-                              ("c2", Conv2d(64L, 192L, kernelSize=3L, padding=1L) :> Module),
-                              ("r2", ReLU(inPlace=true) :> Module),
-                              ("mp2", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module),
-                              ("c3", Conv2d(192L, 384L, kernelSize=3L, padding=1L) :> Module),
-                              ("r3", ReLU(inPlace=true) :> Module),
-                              ("c4", Conv2d(384L, 256L, kernelSize=3L, padding=1L) :> Module),
-                              ("r4", ReLU(inPlace=true) :> Module),
-                              ("c5", Conv2d(256L, 256L, kernelSize=3L, padding=1L) :> Module),
-                              ("r5", ReLU(inPlace=true) :> Module),
-                              ("mp3", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module),
-                              ("avg", AdaptiveAvgPool2d([|2L; 2L|]) :> Module))
+    let features = Sequential(("c1", Conv2d(3L, 64L, kernelSize=3L, stride=2L, padding=1L) :> Module<torch.Tensor,torch.Tensor>),
+                              ("r1", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                              ("mp1", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module<torch.Tensor,torch.Tensor>),
+                              ("c2", Conv2d(64L, 192L, kernelSize=3L, padding=1L) :> Module<torch.Tensor,torch.Tensor>),
+                              ("r2", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                              ("mp2", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module<torch.Tensor,torch.Tensor>),
+                              ("c3", Conv2d(192L, 384L, kernelSize=3L, padding=1L) :> Module<torch.Tensor,torch.Tensor>),
+                              ("r3", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                              ("c4", Conv2d(384L, 256L, kernelSize=3L, padding=1L) :> Module<torch.Tensor,torch.Tensor>),
+                              ("r4", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                              ("c5", Conv2d(256L, 256L, kernelSize=3L, padding=1L) :> Module<torch.Tensor,torch.Tensor>),
+                              ("r5", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                              ("mp3", MaxPool2d(kernelSize=[|2L; 2L|]) :> Module<torch.Tensor,torch.Tensor>),
+                              ("avg", AdaptiveAvgPool2d([|2L; 2L|]) :> Module<torch.Tensor,torch.Tensor>))
 
-    let classifier = Sequential(("d1", Dropout() :> Module),
-                                ("l1", Linear(256L * 2L * 2L, 4096L) :> Module),
-                                ("r6", ReLU(inPlace=true) :> Module),
-                                ("d2", Dropout() :> Module),
-                                ("l2", Linear(4096L, 4096L) :> Module),
-                                ("r7", ReLU(inPlace=true) :> Module),
-                                ("d3", Dropout() :> Module),
-                                ("l3", Linear(4096L, numClasses) :> Module),
-                                ("logsm", LogSoftmax(1L) :> Module))
+    let classifier = Sequential(("d1", Dropout() :> Module<torch.Tensor,torch.Tensor>),
+                                ("l1", Linear(256L * 2L * 2L, 4096L) :> Module<torch.Tensor,torch.Tensor>),
+                                ("r6", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                                ("d2", Dropout() :> Module<torch.Tensor,torch.Tensor>),
+                                ("l2", Linear(4096L, 4096L) :> Module<torch.Tensor,torch.Tensor>),
+                                ("r7", ReLU(inplace=true) :> Module<torch.Tensor,torch.Tensor>),
+                                ("d3", Dropout() :> Module<torch.Tensor,torch.Tensor>),
+                                ("l3", Linear(4096L, numClasses) :> Module<torch.Tensor,torch.Tensor>),
+                                ("logsm", LogSoftmax(1L) :> Module<torch.Tensor,torch.Tensor>))
 
     do
         this.RegisterComponents()
@@ -84,7 +84,7 @@ type Model(name,device:torch.Device) as this =
 
         classifier.forward(x)
 
-let loss x y = functional.nll_loss().Invoke(x,y)
+let loss x y = functional.nll_loss(x,y)
 
 let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
 
@@ -128,7 +128,7 @@ let train (model:Model) (optimizer:Optimizer) (dataLoader: CIFARReader) epoch =
 let test (model:Model) (dataLoader:CIFARReader) =
     model.eval()
 
-    let sz = float32 dataLoader.Size
+    let sz = single dataLoader.Size
 
     let mutable testLoss = 0.0f
     let mutable correct = 0L
@@ -146,8 +146,8 @@ let test (model:Model) (dataLoader:CIFARReader) =
         use sum = estimate.argmax(1L).eq(labels).sum()
         correct <- correct + sum.ToInt64()
 
-    let avgLossString = (testLoss / (float32 batchCount)).ToString("0.0000")
-    let accString = ((float32 correct) / sz).ToString("0.0000")
+    let avgLossString = (testLoss / (single batchCount)).ToString("0.0000")
+    let accString = ((single correct) / sz).ToString("0.0000")
 
     printfn $"\rTest set: Average loss {avgLossString} | Accuracy {accString}"
     

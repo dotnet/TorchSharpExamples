@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using TorchSharp;
-using TorchSharp.torchvision;
+using static TorchSharp.torchvision;
 
 using TorchSharp.Examples;
 using TorchSharp.Examples.Utils;
@@ -84,7 +84,7 @@ namespace CSharpExamples
             Console.WriteLine();
 
             var model = new TransformerModel(ntokens, emsize, nhead, nhid, nlayers, dropout).to((Device)device);
-            var loss = cross_entropy_loss();
+            var loss = CrossEntropyLoss();
             var lr = 2.50;
             var optimizer = torch.optim.SGD(model.parameters(), lr);
             var scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 1, 0.95, last_epoch: 15);
@@ -122,7 +122,7 @@ namespace CSharpExamples
             Console.WriteLine($"\nEnd of training | time: {totalTime.Elapsed.TotalSeconds:0.0}s | loss: {tst_loss:0.00}\n");
         }
 
-        private static void train(int epoch, Tensor train_data, TransformerModel model, Loss criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
+        private static void train(int epoch, Tensor train_data, TransformerModel model, Loss<Tensor, Tensor, Tensor> criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
         {
             model.train();
 
@@ -151,7 +151,7 @@ namespace CSharpExamples
 
                     using (var output = model.forward(data, src_mask))
                     {
-                        var loss = criterion(output.view(-1, ntokens), targets);
+                        var loss = criterion.forward(output.view(-1, ntokens), targets);
                         loss.backward();
                         torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5);
                         optimizer.step();
@@ -171,7 +171,7 @@ namespace CSharpExamples
             }
         }
 
-        private static double evaluate(Tensor eval_data, TransformerModel model, Loss criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
+        private static double evaluate(Tensor eval_data, TransformerModel model, Loss<Tensor, Tensor, Tensor> criterion, int bptt, int ntokens, torch.optim.Optimizer optimizer)
         {
             model.eval();
 
@@ -194,7 +194,7 @@ namespace CSharpExamples
                     }
                     using (var output = model.forward(data, src_mask))
                     {
-                        var loss = criterion(output.view(-1, ntokens), targets);
+                        var loss = criterion.forward(output.view(-1, ntokens), targets);
                         total_loss += data.shape[0] * loss.to(torch.CPU).item<float>();
                     }
 

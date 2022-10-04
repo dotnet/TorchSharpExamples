@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using TorchSharp;
-using TorchSharp.torchvision;
+using static TorchSharp.torchvision;
 
 using TorchSharp.Examples;
 using TorchSharp.Examples.Utils;
@@ -101,7 +101,7 @@ namespace CSharpExamples
             }
         }
 
-        internal static void TrainingLoop(string dataset, int timeout, TorchSharp.Modules.SummaryWriter writer, Device device, Module model, MNISTReader train, MNISTReader test)
+        internal static void TrainingLoop(string dataset, int timeout, TorchSharp.Modules.SummaryWriter writer, Device device, Module<Tensor, Tensor> model, MNISTReader train, MNISTReader test)
         {
             var optimizer = optim.Adam(model.parameters());
 
@@ -113,8 +113,8 @@ namespace CSharpExamples
             for (var epoch = 1; epoch <= _epochs; epoch++)
             {
 
-                Train(model, optimizer, nll_loss(reduction: Reduction.Mean), device, train, epoch, train.BatchSize, train.Size);
-                Test(model, nll_loss(reduction: nn.Reduction.Sum), writer, device, test, epoch, test.Size);
+                Train(model, optimizer, NLLLoss(reduction: Reduction.Mean), device, train, epoch, train.BatchSize, train.Size);
+                Test(model, NLLLoss(reduction: nn.Reduction.Sum), writer, device, test, epoch, test.Size);
 
                 Console.WriteLine($"End-of-epoch memory use: {GC.GetTotalMemory(false)}");
 
@@ -129,9 +129,9 @@ namespace CSharpExamples
         }
 
         private static void Train(
-            Module model,
+            Module<Tensor, Tensor> model,
             optim.Optimizer optimizer,
-            Loss loss,
+            Loss<Tensor, Tensor, Tensor> loss,
             Device device,
             IEnumerable<(Tensor, Tensor)> dataLoader,
             int epoch,
@@ -151,7 +151,7 @@ namespace CSharpExamples
                     optimizer.zero_grad();
 
                     var prediction = model.forward(data);
-                    var output = loss(prediction, target);
+                    var output = loss.forward(prediction, target);
 
                     output.backward();
 
@@ -169,8 +169,8 @@ namespace CSharpExamples
         }
 
         private static void Test(
-            Module model,
-            Loss loss,
+            Module<Tensor, Tensor> model,
+            Loss<Tensor, Tensor, Tensor> loss,
             TorchSharp.Modules.SummaryWriter writer,
             Device device,
             IEnumerable<(Tensor, Tensor)> dataLoader,
@@ -187,7 +187,7 @@ namespace CSharpExamples
                 using (var d = torch.NewDisposeScope())
                 {
                     var prediction = model.forward(data);
-                    var output = loss(prediction, target);
+                    var output = loss.forward(prediction, target);
                     testLoss += output.ToSingle();
 
                     correct += prediction.argmax(1).eq(target).sum().ToInt32();

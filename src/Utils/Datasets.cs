@@ -41,5 +41,11 @@ namespace TorchText
         {
             return (WikiText2("train", root), WikiText2("valid", root), WikiText2("test", root));
         }
+
+        /// <summary>
+        /// Hack to get around F# issue.
+        /// </summary>
+        /// <returns></returns>
+        public static bool cuda_is_available() => TorchSharp.torch.cuda.is_available();
     }
 }

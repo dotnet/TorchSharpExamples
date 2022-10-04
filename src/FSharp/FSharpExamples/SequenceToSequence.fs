@@ -44,14 +44,14 @@ let datasetPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.
 
 torch.random.manual_seed(1L) |> ignore
 
-let hasCUDA = torch.cuda.is_available()
+let hasCUDA = TorchText.Datasets.cuda_is_available()
 
 let device = if hasCUDA then torch.CUDA else torch.CPU
 
-let criterion x y = functional.cross_entropy_loss(reduction=Reduction.Mean).Invoke(x,y)
+let criterion x y = torch.nn.functional.cross_entropy(x,y,reduction=Reduction.Mean)
 
 type PositionalEncoding(dmodel, maxLen) as this =
-    inherit Module("PositionalEncoding")
+    inherit Module<torch.Tensor,torch.Tensor>("PositionalEncoding")
 
     let dropout = Dropout(dropout)
     let mutable pe = torch.zeros([| maxLen; dmodel|])
@@ -77,7 +77,7 @@ type PositionalEncoding(dmodel, maxLen) as this =
         dropout.forward(x)
 
 type TransformerModel(ntokens, device:torch.Device) as this =
-    inherit Module("Transformer")
+    inherit Module<torch.Tensor,torch.Tensor, torch.Tensor>("Transformer")
 
     let pos_encoder = new PositionalEncoding(emsize, 5000L)
     let encoder_layers = TransformerEncoderLayer(emsize, nheads, nhidden, dropout)
@@ -98,8 +98,6 @@ type TransformerModel(ntokens, device:torch.Device) as this =
 
         if device.``type`` = DeviceType.CUDA then
             this.``to``(device) |> ignore
-
-    override _.forward(input) = raise (NotImplementedException("single-argument forward()"))
 
     override _.forward(t, mask) =
         let src = pos_encoder.forward(encoder.forward(t) * sqrEmSz)
