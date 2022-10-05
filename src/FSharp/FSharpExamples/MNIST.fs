@@ -6,6 +6,7 @@ open System.IO
 open System.Diagnostics
 
 open TorchSharp
+open type TorchSharp.torch
 open type TorchSharp.torch.nn
 open type TorchSharp.torch.optim
 open type TorchSharp.Scalar
@@ -40,7 +41,7 @@ let datasetPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.
 
 torch.random.manual_seed(1L) |> ignore
 
-let hasCUDA = torch.cuda.is_available()
+let hasCUDA = TorchText.Datasets.cuda_is_available()
 
 let device = if hasCUDA then torch.CUDA else torch.CPU
 
@@ -54,7 +55,7 @@ let getDataFiles sourceDir targetDir =
         Utils.Decompress.DecompressGZipFile(Path.Combine(sourceDir, "t10k-labels-idx1-ubyte.gz"), targetDir)
 
 type Model(name,device:torch.Device) as this =
-    inherit Module(name)
+    inherit Module<torch.Tensor,torch.Tensor>(name)
 
     let conv1 = Conv2d(1L, 32L, 3L)
     let conv2 = Conv2d(32L, 64L, 3L)
@@ -84,9 +85,9 @@ type Model(name,device:torch.Device) as this =
         --> fc1 --> relu --> dropout2 --> fc2
         --> logsm
 
-let loss x y = functional.nll_loss(reduction=Reduction.Mean).Invoke(x,y)
+let loss x y = functional.nll_loss(x,y,reduction=Reduction.Mean)
 
-let train (model:Model) (optimizer:Optimizer) (dataLoader: MNISTReader) epoch =
+let train (model:Module<torch.Tensor,torch.Tensor>) (optimizer:Optimizer) (dataLoader: MNISTReader) epoch =
     model.train()
 
     let size = dataLoader.Size
@@ -118,7 +119,7 @@ let train (model:Model) (optimizer:Optimizer) (dataLoader: MNISTReader) epoch =
 let test (model:Model) (dataLoader:MNISTReader) =
     model.eval()
 
-    let sz = float32 dataLoader.Size
+    let sz = single dataLoader.Size
 
     let mutable testLoss = 0.0f
     let mutable correct = 0
@@ -137,7 +138,7 @@ let test (model:Model) (dataLoader:MNISTReader) =
         end
 
     printfn $"Size: {sz}, Total: {sz}"
-    printfn $"\rTest set: Average loss {(testLoss / sz):F4} | Accuracy {(float32 correct / sz):P2}"
+    printfn $"\rTest set: Average loss {(testLoss / sz):F4} | Accuracy {(single correct / sz):P2}"
 
 let trainingLoop (model:Model) epochs dataset trainData testData =
 

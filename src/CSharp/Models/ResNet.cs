@@ -10,7 +10,7 @@ namespace TorchSharp.Examples
     /// <summary>
     /// Modified version of ResNet to classify CIFAR10 32x32 images.
     /// </summary>
-    public class ResNet : Module
+    public class ResNet : Module<Tensor, Tensor>
     {
         // The code here is is loosely based on https://github.com/kuangliu/pytorch-cifar/blob/master/models/resnet.py
         // Licence and copypright notice at: https://github.com/kuangliu/pytorch-cifar/blob/master/LICENSE
@@ -18,7 +18,7 @@ namespace TorchSharp.Examples
         private readonly long[] planes = new long[] { 64, 128, 128, 256, 256, 512, 512, 512, 512, 512, 512, 1024, 1024 };
         private readonly long[] strides = new long[] { 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1 };
 
-        private readonly Module layers;
+        private readonly Module<Tensor, Tensor> layers;
         private int in_planes = 64;
 
         public static ResNet ResNet18(int numClasses, Device device = null)
@@ -71,15 +71,15 @@ namespace TorchSharp.Examples
                 device);
         }
 
-        public ResNet(string name, Func<string, int,int,int,Module> block, int expansion, IList<int> num_blocks, int numClasses, Device device = null) : base(name)
+        public ResNet(string name, Func<string, int,int,int, Module<Tensor, Tensor>> block, int expansion, IList<int> num_blocks, int numClasses, Device device = null) : base(name)
         {
             if (planes.Length != strides.Length) throw new ArgumentException("'planes' and 'strides' must have the same length.");
 
-            var modules = new List<(string, Module)>();
+            var modules = new List<(string, Module<Tensor, Tensor>)>();
 
             modules.Add(($"conv2d-first", Conv2d(3, 64, kernelSize: 3, stride: 1, padding: 1, bias: false)));
             modules.Add(($"bnrm2d-first", BatchNorm2d(64)));
-            modules.Add(($"relu-first", ReLU(inPlace:true)));
+            modules.Add(($"relu-first", ReLU(inplace:true)));
             MakeLayer(modules, block, expansion, 64, num_blocks[0], 1);
             MakeLayer(modules, block, expansion, 128, num_blocks[1], 2);
             MakeLayer(modules, block, expansion, 256, num_blocks[2], 2);
@@ -96,7 +96,7 @@ namespace TorchSharp.Examples
                 this.to(device);
         }
 
-        private void MakeLayer(List<(string, Module)> modules, Func<string, int, int, int, Module> block, int expansion, int planes, int num_blocks, int stride)
+        private void MakeLayer(List<(string, Module<Tensor, Tensor>)> modules, Func<string, int, int, int, Module<Tensor, Tensor>> block, int expansion, int planes, int num_blocks, int stride)
         {
             var strides = new List<int>();
             strides.Add(stride);
@@ -114,15 +114,15 @@ namespace TorchSharp.Examples
             return layers.forward(input);
         }
 
-        class BasicBlock : Module
+        class BasicBlock : Module<Tensor, Tensor>
         {
             public BasicBlock (string name, int in_planes, int planes, int stride) : base(name)
             {
-                var modules = new List<(string, Module)>();
+                var modules = new List<(string, Module<Tensor, Tensor>)>();
 
                 modules.Add(($"{name}-conv2d-1", Conv2d(in_planes, planes, kernelSize: 3, stride: stride, padding: 1, bias: false)));
                 modules.Add(($"{name}-bnrm2d-1", BatchNorm2d(planes)));
-                modules.Add(($"{name}-relu-1", ReLU(inPlace: true)));
+                modules.Add(($"{name}-relu-1", ReLU(inplace: true)));
                 modules.Add(($"{name}-conv2d-2", Conv2d(planes, planes, kernelSize: 3, stride: 1, padding: 1, bias: false)));
                 modules.Add(($"{name}-bnrm2d-2", BatchNorm2d(planes)));
 
@@ -137,7 +137,7 @@ namespace TorchSharp.Examples
                     shortcut = Sequential();
                 }
 
-                modules.Add(($"{name}-relu-2", ReLU(inPlace: true)));
+                modules.Add(($"{name}-relu-2", ReLU(inplace: true)));
 
                 RegisterComponents();
             }
@@ -151,22 +151,22 @@ namespace TorchSharp.Examples
 
             public static int expansion = 1;
 
-            private readonly Module layers;
-            private readonly Module shortcut;
+            private readonly Module<Tensor, Tensor> layers;
+            private readonly Module<Tensor, Tensor> shortcut;
         }
 
-        class Bottleneck : Module
+        class Bottleneck : Module<Tensor, Tensor>
         {
             public Bottleneck(string name, int in_planes, int planes, int stride) : base(name)
             {
-                var modules = new List<(string, Module)>();
+                var modules = new List<(string, Module<Tensor, Tensor>)>();
 
                 modules.Add(($"{name}-conv2d-1", Conv2d(in_planes, planes, kernelSize: 1, bias: false)));
                 modules.Add(($"{name}-bnrm2d-1", BatchNorm2d(planes)));
-                modules.Add(($"{name}relu-1", ReLU(inPlace:true)));
+                modules.Add(($"{name}relu-1", ReLU(inplace:true)));
                 modules.Add(($"{name}-conv2d-2", Conv2d(planes, planes, kernelSize: 3, stride: stride, padding: 1, bias: false)));
                 modules.Add(($"{name}-bnrm2d-2", BatchNorm2d(planes)));
-                modules.Add(($"{name}relu-2", ReLU(inPlace: true)));
+                modules.Add(($"{name}relu-2", ReLU(inplace: true)));
                 modules.Add(($"{name}-conv2d-3", Conv2d(planes, expansion * planes, kernelSize: 1, bias: false)));
                 modules.Add(($"{name}-bnrm2d-3", BatchNorm2d(expansion * planes)));
 
@@ -192,8 +192,8 @@ namespace TorchSharp.Examples
 
             public static int expansion = 4;
 
-            private readonly Module layers;
-            private readonly Module shortcut;
+            private readonly Module<Tensor, Tensor> layers;
+            private readonly Module<Tensor, Tensor> shortcut;
         }
     }
 }

@@ -50,11 +50,11 @@ let datasetPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.
 
 torch.random.manual_seed(1L) |> ignore
 
-let hasCUDA = torch.cuda.is_available()
+let hasCUDA = TorchText.Datasets.cuda_is_available()
 
 let device = if hasCUDA then torch.CUDA else torch.CPU
 
-let criterion x y = functional.nll_loss().Invoke(x,y)
+let criterion x y = functional.nll_loss(x,y)
 
 let attack (image:torch.Tensor) (eps:Scalar) (data_grad:torch.Tensor) =
     use sign = data_grad.sign()

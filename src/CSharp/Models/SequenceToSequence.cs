@@ -18,9 +18,9 @@ namespace TorchSharp.Examples
     ///
     /// </summary>
 
-    public class TransformerModel : Module
+    public class TransformerModel : Module<Tensor, Tensor, Tensor>
     {
-        private Module transformer_encoder;
+        private Modules.TransformerEncoder transformer_encoder;
         private PositionalEncoding pos_encoder;
         private Modules.Embedding encoder;
         private Modules.Linear decoder;
@@ -59,11 +59,6 @@ namespace TorchSharp.Examples
             init.uniform_(decoder.weight, -initrange, initrange);
         }
 
-        public override Tensor forward(Tensor t)
-        {
-            throw new NotImplementedException("single-argument forward()");
-        }
-
         public override Tensor forward(Tensor t, Tensor mask)
         {
             using var src = pos_encoder.forward(encoder.forward(t) * MathF.Sqrt(ninputs));
@@ -73,15 +68,15 @@ namespace TorchSharp.Examples
 
         public new TransformerModel to(Device device)
         {
-            base.to(device);
+            this.to<TransformerModel>(device);
             this.device = device;
             return this;
         }
     }
 
-    class PositionalEncoding : Module
+    class PositionalEncoding : Module<Tensor, Tensor>
     {
-        private Module dropout;
+        private Module<Tensor, Tensor> dropout;
         private Tensor pe;
 
         public PositionalEncoding(long dmodel, double dropout, int maxLen = 5000) : base("PositionalEncoding")

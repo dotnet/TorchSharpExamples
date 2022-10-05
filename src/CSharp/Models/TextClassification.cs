@@ -17,7 +17,7 @@ namespace TorchSharp.Examples
     /// https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
     ///
     /// </summary>
-    public class TextClassificationModel : Module
+    public class TextClassificationModel : Module<Tensor, Tensor, Tensor>
     {
         private Modules.EmbeddingBag embedding;
         private Modules.Linear fc;
@@ -40,21 +40,10 @@ namespace TorchSharp.Examples
             init.zeros_(fc.bias);
         }
 
-        public override Tensor forward(Tensor t)
-        {
-            throw new NotImplementedException();
-        }
-
         public override Tensor forward(Tensor input, Tensor offsets)
         {
             var t = embedding.forward(input, offsets);
             return fc.forward(t);
-        }
-
-        public new TextClassificationModel to(Device device)
-        {
-            base.to(device);
-            return this;
         }
     }
 }

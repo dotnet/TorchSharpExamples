@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using TorchSharp;
-using TorchSharp.torchvision;
+using static TorchSharp.torchvision;
 
 using TorchSharp.Examples;
 using TorchSharp.Examples.Utils;
@@ -72,7 +72,7 @@ namespace CSharpExamples
 
             Console.WriteLine($"\tCreating the model...");
 
-            Module model = null;
+            Module<Tensor,Tensor> model = null;
 
             switch (modelName.ToLower())
             {
@@ -133,8 +133,10 @@ namespace CSharpExamples
                     Stopwatch epchSW = new Stopwatch();
                     epchSW.Start();
 
-                    Train(model, optimizer, nll_loss(), train.Data(), epoch, _trainBatchSize, train.Size);
-                    Test(model, nll_loss(), writer, modelName.ToLower(), test.Data(), epoch, test.Size);
+                    var loss = NLLLoss();
+
+                    Train(model, optimizer, loss, train.Data(), epoch, _trainBatchSize, train.Size);
+                    Test(model, loss, writer, modelName.ToLower(), test.Data(), epoch, test.Size);
 
                     epchSW.Stop();
                     Console.WriteLine($"Elapsed time for this epoch: {epchSW.Elapsed.TotalSeconds} s.");
@@ -150,9 +152,9 @@ namespace CSharpExamples
         }
 
         private static void Train(
-            Module model,
+            Module<Tensor,Tensor> model,
             torch.optim.Optimizer optimizer,
-            Loss loss,
+            Loss<Tensor, Tensor, Tensor> loss,
             IEnumerable<(Tensor, Tensor)> dataLoader,
             int epoch,
             long batchSize,
@@ -175,7 +177,7 @@ namespace CSharpExamples
 
                     var prediction = model.forward(data);
                     var lsm = log_softmax(prediction, 1);
-                    var output = loss(lsm, target);
+                    var output = loss.forward(lsm, target);
 
                     output.backward();
 
@@ -197,8 +199,8 @@ namespace CSharpExamples
         }
 
         private static void Test(
-            Module model,
-            Loss loss,
+            Module<Tensor, Tensor> model,
+            Loss<Tensor, Tensor, Tensor> loss,
             TorchSharp.Modules.SummaryWriter writer,
             string modelName,
             IEnumerable<(Tensor, Tensor)> dataLoader,
@@ -218,7 +220,7 @@ namespace CSharpExamples
                 {
                     var prediction = model.forward(data);
                     var lsm = log_softmax(prediction, 1);
-                    var output = loss(lsm, target);
+                    var output = loss.forward(lsm, target);
 
                     testLoss += output.ToSingle();
                     batchCount += 1;
