@@ -66,7 +66,7 @@ namespace TorchSharp.Examples
             return decoder.forward(enc);
         }
 
-        public new TransformerModel to(Device device)
+        public TransformerModel to(Device device)
         {
             this.to<TransformerModel>(device);
             this.device = device;
