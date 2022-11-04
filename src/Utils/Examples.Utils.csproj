@@ -11,9 +11,9 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SharpZipLib" Version="1.3.3" />
-    <PackageReference Include="TorchSharp-cpu" Version="0.98.1" />
-    <PackageReference Include="TorchVision" Version="0.98.1" />
+    <PackageReference Include="SharpZipLib" Version="1.4.0" />
+    <PackageReference Include="TorchSharp-cuda-windows" Version="0.99.0" />
+    <PackageReference Include="TorchVision" Version="0.99.0" />
   </ItemGroup>
 
 </Project>
