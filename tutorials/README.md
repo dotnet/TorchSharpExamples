@@ -19,6 +19,6 @@ or
 [Installing .NET Interactive](https://github.com/dotnet/interactive/blob/main/docs/install-dotnet-interactive.md)
 
 
-For your tutorials, please choose one of: [C#](./CSharp/index.md) or [F#](./FSharp/index.md).
+For your tutorials, please choose one of: [C#](./CSharp/README.md) or [F#](./FSharp/README.md).
 
 __More tutorials are coming.__
