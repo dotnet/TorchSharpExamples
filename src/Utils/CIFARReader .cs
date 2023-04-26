@@ -111,7 +111,7 @@ namespace TorchSharp.Examples
                 yield return (data[i], labels[i]);
 
                 foreach (var tfrm in _transforms) {
-                    yield return (tfrm.forward(data[i]), labels[i]);
+                    yield return (tfrm.call(data[i]), labels[i]);
                 }
             }
         }

@@ -65,7 +65,7 @@ type TextClassificationModel(vocabSize, embedDim, nClasses, device:torch.Device)
             this.``to``(device) |> ignore
 
     override _.forward(input, offsets) =
-        embedding.forward(input, offsets) --> fc
+        embedding.call(input, offsets) --> fc
 
 let train epoch (trainData:IEnumerable<torch.Tensor*torch.Tensor*torch.Tensor>) (model:TextClassificationModel) (optimizer:torch.optim.Optimizer) =
 

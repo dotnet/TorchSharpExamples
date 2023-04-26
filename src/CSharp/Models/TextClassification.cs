@@ -42,7 +42,7 @@ namespace TorchSharp.Examples
 
         public override Tensor forward(Tensor input, Tensor offsets)
         {
-            var t = embedding.forward(input, offsets);
+            var t = embedding.call(input, offsets);
             return fc.forward(t);
         }
     }

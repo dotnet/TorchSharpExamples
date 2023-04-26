@@ -62,7 +62,7 @@ namespace TorchSharp.Examples
         public override Tensor forward(Tensor t, Tensor mask)
         {
             using var src = pos_encoder.forward(encoder.forward(t) * MathF.Sqrt(ninputs));
-            using var enc = transformer_encoder.forward(src, mask);
+            using var enc = transformer_encoder.call(src, mask);
             return decoder.forward(enc);
         }
 

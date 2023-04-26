@@ -233,7 +233,7 @@ namespace CSharpExamples
 
             if (writer != null)
             {
-                writer.add_scalar($"{modelName}/loss", (float)(testLoss / size), epoch);
+                writer.add_scalar($"{modelName}/loss", (float)(testLoss / batchCount), epoch);
                 writer.add_scalar($"{modelName}/accuracy", (float)correct / size, epoch);
             }
         }
