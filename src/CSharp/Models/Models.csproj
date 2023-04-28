@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.98.1" />
+    <PackageReference Include="TorchSharp-cuda-windows" Version="0.99.6" />
+    <PackageReference Include="TorchVision" Version="0.99.6" />
   </ItemGroup>
 
 </Project>

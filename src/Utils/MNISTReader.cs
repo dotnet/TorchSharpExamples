@@ -103,7 +103,7 @@ namespace TorchSharp.Examples
                 if (transform != null) {
                     // Carefully dispose the original
                     using(var batch_copy = batch)
-                    batch = transform.forward(batch);
+                    batch = transform.call(batch);
                 }
 
                 data.Add(batch);

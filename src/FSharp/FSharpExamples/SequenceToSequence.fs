@@ -101,7 +101,7 @@ type TransformerModel(ntokens, device:torch.Device) as this =
 
     override _.forward(t, mask) =
         let src = pos_encoder.forward(encoder.forward(t) * sqrEmSz)
-        let enc = transformer_encoder.forward(src, mask)
+        let enc = transformer_encoder.call(src, mask)
         decoder.forward(enc)
 
     member _.GenerateSquareSubsequentMask(size:int64) =
