@@ -27,7 +27,7 @@ namespace TorchSharp.Examples
                 "ResNet18",
                 (name, in_planes, planes, stride) => new BasicBlock(name, in_planes, planes, stride),
                 BasicBlock.expansion, new int[] { 2, 2, 2, 2 },
-                10,
+                numClasses,
                 device); 
         }
 
@@ -37,7 +37,7 @@ namespace TorchSharp.Examples
                 "ResNet34",
                 (name, in_planes, planes, stride) => new BasicBlock(name, in_planes, planes, stride),
                 BasicBlock.expansion, new int[] { 3, 4, 6, 3 },
-                10,
+                numClasses,
                 device);
         }
 
@@ -47,7 +47,7 @@ namespace TorchSharp.Examples
                 "ResNet50",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 6, 3 },
-                10,
+                numClasses,
                 device);
         }
 
@@ -57,7 +57,7 @@ namespace TorchSharp.Examples
                 "ResNet101",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 23, 3 },
-                10,
+                numClasses,
                 device);
         }
 
@@ -67,7 +67,7 @@ namespace TorchSharp.Examples
                 "ResNet101",
                 (name, in_planes, planes, stride) => new Bottleneck(name, in_planes, planes, stride),
                 Bottleneck.expansion, new int[] { 3, 4, 36, 3 },
-                10,
+                numClasses,
                 device);
         }
 
