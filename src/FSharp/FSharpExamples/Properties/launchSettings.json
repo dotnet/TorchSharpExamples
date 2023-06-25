@@ -2,7 +2,7 @@
   "profiles": {
     "FSharpExamples": {
       "commandName": "Project",
-      "commandLineArgs": "-e 2 MNIST"
+      "commandLineArgs": "-e 2 alexnet"
     }
   }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "CSharpExamples": {
       "commandName": "Project",
-      "commandLineArgs": "-e 10 resnet18 -l tb_runs"
+      "commandLineArgs": "-e 10 alexnet -l tb_runs"
     }
   }
 }
