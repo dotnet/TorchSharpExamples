@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.100.3" />
-    <PackageReference Include="TorchVision" Version="0.100.3" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.100.5" />
+    <PackageReference Include="TorchVision" Version="0.100.5" />
   </ItemGroup>
 
 </Project>
