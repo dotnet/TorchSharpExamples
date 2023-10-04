@@ -204,14 +204,14 @@ namespace TorchSharp.Examples.Utils
             return TryGetValue<string[]>(name, out value);
         }
 
-        private bool TryGetValue<T>(string name, out T value)
+        public bool TryGetValue<T>(string name, out T value, T @default = default(T))
         {
             if (namedArguments.TryGetValue(name, out var obj) && obj is T)
             {
                 value = (T)obj;
                 return true;
             }
-            value = default(T);
+            value = @default;
             return false;
         }
 

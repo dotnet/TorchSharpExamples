@@ -18,9 +18,9 @@ namespace CSharpExamples
                 return;
             }
 
-            var epochs = argumentParser.TryGetValueInt("epochs", out int e) ? e : 16;
-            var timeout = argumentParser.TryGetValueInt("timeout", out int t) ? t : 3600;
-            var logdir = argumentParser.TryGetValueString("logdir", out string ld) ? ld : null;
+            argumentParser.TryGetValue("epochs", out int epochs, 16);
+            argumentParser.TryGetValue("timeout", out int timeout, 3600);
+            argumentParser.TryGetValue("logdir", out string logdir, null);
 
             for (var idx = 0; idx < argumentParser.Count; idx++)
             {
