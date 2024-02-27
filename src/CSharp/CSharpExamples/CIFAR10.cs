@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 using TorchSharp;
 using static TorchSharp.torchvision;
@@ -47,9 +48,10 @@ namespace CSharpExamples
                 // This worked on a GeForce RTX 2080 SUPER with 8GB, for all the available network architectures.
                 // It may not fit with less memory than that, but it's worth modifying the batch size to fit in memory.
                 torch.cuda.is_available() ? torch.CUDA :
+                torch.mps_is_available() ? torch.MPS :
                 torch.CPU;
 
-            if (device.type == DeviceType.CUDA)
+            if (device.type != DeviceType.CPU)
             {
                 _trainBatchSize *= 8;
                 _testBatchSize *= 8;

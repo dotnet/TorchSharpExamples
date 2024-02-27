@@ -4,7 +4,6 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <WarnOn>3390;$(WarnOn)</WarnOn>
-    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cpu" Version="0.100.5" />
-    <PackageReference Include="TorchVision" Version="0.100.5" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.102.0" />
+    <PackageReference Include="TorchVision" Version="0.102.0" />
   </ItemGroup>
 
   <ItemGroup>

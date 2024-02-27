@@ -51,7 +51,10 @@ namespace CSharpExamples
 
             var cwd = Environment.CurrentDirectory;
 
-            var device = torch.cuda.is_available() ? torch.CUDA : torch.CPU;
+            var device = 
+                torch.cuda.is_available() ? torch.CUDA :
+                torch.mps_is_available() ? torch.MPS :
+                torch.CPU;
 
             Console.WriteLine();
             Console.WriteLine($"\tRunning SequenceToSequence on {device.type.ToString()} for {epochs} epochs, terminating after {TimeSpan.FromSeconds(timeout)}.");

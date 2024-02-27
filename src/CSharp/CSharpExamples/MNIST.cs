@@ -52,7 +52,10 @@ namespace CSharpExamples
                 dataset = "mnist";
             }
 
-            var device = cuda.is_available() ? CUDA : CPU;
+            var device = 
+                torch.cuda.is_available() ? torch.CUDA :
+                torch.mps_is_available() ? torch.MPS :
+                torch.CPU;
 
             Console.WriteLine();
             Console.WriteLine($"\tRunning MNIST with {dataset} on {device.type.ToString()} for {epochs} epochs, terminating after {TimeSpan.FromSeconds(timeout)}.");

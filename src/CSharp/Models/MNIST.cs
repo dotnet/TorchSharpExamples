@@ -35,7 +35,7 @@ namespace TorchSharp.Examples.MNIST
         {
             RegisterComponents();
 
-            if (device != null && device.type == DeviceType.CUDA)
+            if (device != null && device.type != DeviceType.CPU)
                 this.to(device);
         }
 
