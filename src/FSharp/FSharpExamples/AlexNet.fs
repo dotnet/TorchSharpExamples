@@ -174,8 +174,6 @@ let run epochs =
         trainBatchSize <- trainBatchSize * 8
         testBatchSize <- testBatchSize * 8
 
-    let epochs = if device.``type`` = DeviceType.CUDA then epochs * 4 else epochs
-    
     printfn ""
     printfn $"\tRunning AlexNet with {dataset} on {device.``type``.ToString()} for {epochs} epochs"
     printfn ""
