@@ -161,7 +161,7 @@ namespace CSharpExamples
                         model.zero_grad();
                         loss.backward();
 
-                        var perturbed = Attack(data, ε, data.grad());
+                        var perturbed = Attack(data, ε, data.grad);
 
                         using (var final = model.forward(perturbed))
                         {

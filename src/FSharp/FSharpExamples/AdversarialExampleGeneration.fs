@@ -77,7 +77,7 @@ let test (model:MNIST.Model) (eps:float) (dataLoader:MNISTReader) size =
             model.zero_grad()
             loss.backward()
 
-            use perturbed = attack input (eps.ToScalar()) (input.grad())
+            use perturbed = attack input (eps.ToScalar()) (input.grad)
             use final = perturbed --> model
             correct <- correct + final.argmax(1L).eq(labels).sum().ToInt32()
         end
