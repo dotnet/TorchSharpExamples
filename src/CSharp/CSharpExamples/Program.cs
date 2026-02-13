@@ -78,6 +78,26 @@ namespace CSharpExamples
                         MNISTRnn.Run(epochs, timeout, logdir);
                         break;
 
+                    case "super-resolution":
+                        SuperResolution.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "forward-forward":
+                        ForwardForward.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "siamese":
+                        SiameseNetwork.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "gcn":
+                        GCN.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "gat":
+                        GAT.Run(epochs, timeout, logdir);
+                        break;
+
                     default:
                         Console.Error.WriteLine($"Unknown model name: {argumentParser[idx]}");
                         break;
