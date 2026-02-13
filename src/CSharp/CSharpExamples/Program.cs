@@ -62,6 +62,22 @@ namespace CSharpExamples
                         SequenceToSequence.Run(epochs, timeout, logdir);
                         break;
 
+                    case "vae":
+                        VAE.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "dcgan":
+                        DCGAN.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "regression":
+                        Regression.Run(epochs, timeout);
+                        break;
+
+                    case "mnist-rnn":
+                        MNISTRnn.Run(epochs, timeout, logdir);
+                        break;
+
                     default:
                         Console.Error.WriteLine($"Unknown model name: {argumentParser[idx]}");
                         break;
