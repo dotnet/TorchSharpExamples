@@ -78,6 +78,45 @@ namespace CSharpExamples
                         MNISTRnn.Run(epochs, timeout, logdir);
                         break;
 
+                    case "super-resolution":
+                        SuperResolution.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "forward-forward":
+                        ForwardForward.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "siamese":
+                        SiameseNetwork.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "gcn":
+                        GCN.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "gat":
+                        GAT.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "time-seq":
+                        TimeSequencePrediction.Run(epochs, timeout, logdir);
+                        break;
+
+                    case "wlm-lstm":
+                    case "wlm-gru":
+                    case "wlm-rnn-tanh":
+                    case "wlm-rnn-relu":
+                        var rnnType = argumentParser[idx].ToLower() switch
+                        {
+                            "wlm-lstm" => "LSTM",
+                            "wlm-gru" => "GRU",
+                            "wlm-rnn-tanh" => "RNN_TANH",
+                            "wlm-rnn-relu" => "RNN_RELU",
+                            _ => "LSTM"
+                        };
+                        WordLanguageModel.Run(rnnType, epochs, timeout, logdir);
+                        break;
+
                     default:
                         Console.Error.WriteLine($"Unknown model name: {argumentParser[idx]}");
                         break;
