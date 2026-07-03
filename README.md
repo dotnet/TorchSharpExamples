@@ -52,8 +52,6 @@ We have started work on tutorials, but they are not ready yet. They will mostly 
 
 # Contributing
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
 There are two main things we would like help with:
 
 1. Adding completely new examples. File an issue and assign it to yourself, so we can track it.
